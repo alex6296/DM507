@@ -45,6 +45,7 @@ public class PQHeapV1 implements PQ {
 
     private int getParent(int currentNodeIndex) {
         int value = (int) floor(currentNodeIndex / 2);
+        System.out.println("");
         System.out.print("get parent of " + currentNodeIndex + " -> " + value);
         if (value < 1) {
             System.out.println("   (first index=1 so param was returned do to no parent exisitng)");
@@ -74,10 +75,6 @@ public class PQHeapV1 implements PQ {
     }
 
     public int findSmallestElement(int rootIndex, int leftChildIndex, int rightChildIndex) {
-
-        System.out.println("---heap atm---");
-        System.out.println(this.toString());
-        System.out.println("-------------- ");
 
         Element rootElement = heap[rootIndex];
         Element leftChildElement;
@@ -124,17 +121,22 @@ public class PQHeapV1 implements PQ {
 
     private int compareFullSubTree(int rootKey, int leftChildKey, int rightChildKey) {
         //TODO COMPARE CHIELDS
-        int smallest=rootKey;
-        //finding the smallest node in the sub-tree
-        if ( leftChildKey < rootKey) {
+        int smallest;
+        //finding the smallest chield
+        if (leftChildKey < rightChildKey) {
             smallest = this.keyToIndex(leftChildKey);
-        }  else if(rightChildKey < rootKey) {
+            System.out.println("compare 1 smallestkey is left " + leftChildKey);
+        } else {
             smallest = this.keyToIndex(rightChildKey);
+            System.out.println("compare 1 smallestkey is right " + rightChildKey);
+        }
+        //compare the smallest chield to the root
+        if (rootKey <= rightChildKey && rootKey <= leftChildKey) {
+            smallest = this.keyToIndex(rootKey);
+            System.out.println("compare smallestkey is root " + rootKey);
         }
 
-
         //check if right child is smaller then left
-        
         return smallest;
     }
 
@@ -204,18 +206,22 @@ public class PQHeapV1 implements PQ {
 
     public static void main(String args[]) {
         PQHeapV1 stack = new PQHeapV1(10);
-        stack.insert(new Element(3, 1));
+        stack.insert(new Element(3, null));
         System.out.println(stack.toString());
         System.out.println("element 1 was succesfully added");
-        stack.insert(new Element(2, 2));
+        stack.insert(new Element(2, null));
         System.out.println(stack.toString());
         System.out.println("element 2 was succesfully added");
-        
-          stack.insert(new Element(1, 3)); System.out.println(stack.toString());
-        /* *
-         * stack.insert(new Element(5, 4)); System.out.println(stack.print());
-         * stack.insert(new Element(3, 5)); System.out.println(stack.print());
-         */
+
+        stack.insert(new Element(1, null));
+        System.out.println(stack.toString());
+        System.out.println("element 3 was succesfully added");
+        stack.insert(new Element(5, null));
+        System.out.println(stack.toString());
+        System.out.println("element 4 was succesfully added");
+        stack.insert(new Element(4, null));
+        System.out.println(stack.toString());
+        System.out.println("element 5 was succesfully added");
 
     }
 
