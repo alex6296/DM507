@@ -49,7 +49,7 @@ public class PQHeapV1 implements PQ {
         System.out.println("");
         System.out.print("get parent of " + currentNodeIndex + " -> " + value);
         if (value < 1) {
-            System.out.println("   (first index=1 so param was returned do to no parent exisitng)");
+            System.out.println("   (first index = 1 so param was returned do to no parent exisitng)");
             return currentNodeIndex;
         }
         System.out.println("");
@@ -95,16 +95,16 @@ public class PQHeapV1 implements PQ {
         if (leftChildElement != null && rightChildElement == null) {
             int leftChildKey = leftChildElement.getKey();
             int rootKey = rootElement.getKey();
-            System.out.println("used partial compareon rookey " + rootKey +" index: "+rootIndex);
-            return comparePartialTree(rootKey, leftChildKey);
+            System.out.println("used partial compare on root key: " + rootKey +" index: "+rootIndex);
+            return comparePartialTree(rootIndex,rootKey,leftChildIndex, leftChildKey);
 
         } // if there is afull sub tree
         else if (leftChildElement != null && rightChildElement != null) {
             int leftChildKey = leftChildElement.getKey();
             int rightChildKey = rightChildElement.getKey();
             int rootKey = rootElement.getKey();
-            System.out.println("used full compare on root " + rootKey+" index: "+rootIndex);
-            return compareFullSubTree(rootKey, leftChildKey, rightChildKey);
+            System.out.println("used full compare on root key: " + rootKey+" index: "+rootIndex);
+            return compareFullSubTree(rootIndex,rootKey,leftChildIndex, leftChildKey,rightChildIndex, rightChildKey);
         } //no nodes
         else {
             System.out.println("root is smallest so returned root");
@@ -112,31 +112,33 @@ public class PQHeapV1 implements PQ {
         }
     }
 
-    private int comparePartialTree(int rootKey, int leftChildKey) {
-        System.out.println("partial input key: "+rootKey+" index: "+keyToIndex(rootKey)+" root");
-                System.out.println("partial input key: "+leftChildKey+" index: "+keyToIndex(leftChildKey)+" leftchield");
+    private int comparePartialTree(int rootIndex,int rootKey, int leftChieldIndex, int leftChildKey) {
+        System.out.println("partial input key: "+rootKey+" index: "+rootIndex+" root");
+                System.out.println("partial input key: "+leftChildKey+" index: "+leftChieldIndex+" leftchield");
         if (leftChildKey < rootKey) {
-            return this.keyToIndex(leftChildKey);
+            System.out.println("-comparePartialTree-  smallest key is leftchild key: " + leftChildKey+" index: "+leftChieldIndex);
+            return leftChieldIndex;
         } else {
-            return this.keyToIndex(rootKey);
+            System.out.println("-comparePartialTree-  smallest key is root key: " + rootKey+" index: "+rootIndex);
+            return rootIndex;
         }
     }
 
-    private int compareFullSubTree(int rootKey, int leftChildKey, int rightChildKey) {
+    private int compareFullSubTree(int rootIndex,int rootKey, int leftChieldIndex, int leftChildKey,int rightChildIndex, int rightChildKey) {
         //TODO COMPARE CHIELDS
         int smallest;
         //finding the smallest chield
         if (leftChildKey < rightChildKey) {
-            smallest = this.keyToIndex(leftChildKey);
-            System.out.println("compare  smallestkey is leftchild key:" + leftChildKey+" index: "+this.keyToIndex(leftChildKey));
+            smallest = leftChieldIndex;
+            System.out.println("-compareFullSubTree-  smallest key is leftchild key:" + leftChildKey+" index: "+leftChieldIndex);
         } else {
-            smallest = this.keyToIndex(rightChildKey);
-            System.out.println("compare  smallestkey is rightchild key: " + rightChildKey+" index: "+this.keyToIndex(rightChildKey));
+            smallest = rightChildIndex;
+            System.out.println("-compareFullSubTree-  smallest key is rightchild key: " + rightChildKey+" index: "+rightChildIndex);
         }
         //compare the smallest chield to the root
         if (rootKey <= rightChildKey && rootKey <= leftChildKey) {
-            smallest = this.keyToIndex(rootKey);
-            System.out.println("compare smallestkey is root " + rootKey);
+            smallest = rootIndex;
+            System.out.println("-compareFullSubTree-  @override smallest key is root key " + rootKey);
         }
 
         //check if right child is smaller then left
@@ -151,7 +153,7 @@ public class PQHeapV1 implements PQ {
 
         System.out.println("- - - - - - - - - -");
         System.out.println("heapify:");
-        System.out.println("sub-root = " + RootIndex);
+        System.out.println("subTree-root = " + RootIndex);
 
         try {
             leftChildIndex = getLeftChild(RootIndex);
@@ -170,12 +172,11 @@ public class PQHeapV1 implements PQ {
         }
 
         smallestKeyIndex = findSmallestElement(RootIndex, leftChildIndex, rightChildIndex);
-        System.out.println("rootIndex = " + RootIndex);
-        System.out.println("smallestKeyIndex = " + smallestKeyIndex);
+
 
         //if node was smaller then root 
         if (smallestKeyIndex != RootIndex) {
-            System.out.println("in root compare loop");
+            System.out.println("in heapify loop:");
             System.out.println("rootIndex = " + RootIndex);
             System.out.println("smallestKeyIndex = " + smallestKeyIndex);
             System.out.println("doing an exchange");
@@ -231,18 +232,9 @@ public class PQHeapV1 implements PQ {
         stack.insert(new Element(10, null));
         System.out.println(stack.toString());
         System.out.println("element 7 was succesfully added");
-        stack.insert(new Element(3, null));
+        stack.insert(new Element(2, null));
         System.out.println(stack.toString());
         System.out.println("element 8 was succesfully added");
 
-    }
-
-    private int keyToIndex(int smallestKey) {
-        for (int i = 1; i < this.maxSize; i++) {
-            if (heap[i].getKey() == smallestKey) {
-                return i;
-            }
-        }
-        return -1;
     }
 }
