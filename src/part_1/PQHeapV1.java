@@ -39,6 +39,7 @@ public class PQHeapV1 implements PQ {
         heap[size] = e;
 
         //sort
+        System.out.println("size: "+size);
         minHeapify(getParent(size));
         size++;
     }
@@ -94,7 +95,7 @@ public class PQHeapV1 implements PQ {
         if (leftChildElement != null && rightChildElement == null) {
             int leftChildKey = leftChildElement.getKey();
             int rootKey = rootElement.getKey();
-            System.out.println("used partial compareon root " + rootKey);
+            System.out.println("used partial compareon rookey " + rootKey +" index: "+rootIndex);
             return comparePartialTree(rootKey, leftChildKey);
 
         } // if there is afull sub tree
@@ -102,7 +103,7 @@ public class PQHeapV1 implements PQ {
             int leftChildKey = leftChildElement.getKey();
             int rightChildKey = rightChildElement.getKey();
             int rootKey = rootElement.getKey();
-            System.out.println("used full compare on root " + rootKey);
+            System.out.println("used full compare on root " + rootKey+" index: "+rootIndex);
             return compareFullSubTree(rootKey, leftChildKey, rightChildKey);
         } //no nodes
         else {
@@ -112,6 +113,8 @@ public class PQHeapV1 implements PQ {
     }
 
     private int comparePartialTree(int rootKey, int leftChildKey) {
+        System.out.println("partial input key: "+rootKey+" index: "+keyToIndex(rootKey)+" root");
+                System.out.println("partial input key: "+leftChildKey+" index: "+keyToIndex(leftChildKey)+" leftchield");
         if (leftChildKey < rootKey) {
             return this.keyToIndex(leftChildKey);
         } else {
@@ -125,10 +128,10 @@ public class PQHeapV1 implements PQ {
         //finding the smallest chield
         if (leftChildKey < rightChildKey) {
             smallest = this.keyToIndex(leftChildKey);
-            System.out.println("compare 1 smallestkey is left " + leftChildKey);
+            System.out.println("compare  smallestkey is leftchild key:" + leftChildKey+" index: "+this.keyToIndex(leftChildKey));
         } else {
             smallest = this.keyToIndex(rightChildKey);
-            System.out.println("compare 1 smallestkey is right " + rightChildKey);
+            System.out.println("compare  smallestkey is rightchild key: " + rightChildKey+" index: "+this.keyToIndex(rightChildKey));
         }
         //compare the smallest chield to the root
         if (rootKey <= rightChildKey && rootKey <= leftChildKey) {
@@ -152,18 +155,18 @@ public class PQHeapV1 implements PQ {
 
         try {
             leftChildIndex = getLeftChild(RootIndex);
-            System.out.println("leftChild = " + leftChildIndex);
+            System.out.println("leftChildindex = " + leftChildIndex);
         } catch (Exception e) {
             leftChildIndex = null;
-            System.out.println("leftChild = null ");
+            System.out.println("leftChildindex = null ");
         }
 
         try {
             rightChildIndex = getRightChild(RootIndex);
-            System.out.println("RightChild = " + rightChildIndex);
+            System.out.println("RightChildindex = " + rightChildIndex);
         } catch (Exception e) {
             rightChildIndex = null;
-            System.out.println("RightChild = null");
+            System.out.println("RightChildindex = null");
         }
 
         smallestKeyIndex = findSmallestElement(RootIndex, leftChildIndex, rightChildIndex);
@@ -206,7 +209,7 @@ public class PQHeapV1 implements PQ {
 
     public static void main(String args[]) {
         PQHeapV1 stack = new PQHeapV1(10);
-        stack.insert(new Element(3, null));
+        stack.insert(new Element(9, null));
         System.out.println(stack.toString());
         System.out.println("element 1 was succesfully added");
         stack.insert(new Element(2, null));
@@ -222,6 +225,15 @@ public class PQHeapV1 implements PQ {
         stack.insert(new Element(4, null));
         System.out.println(stack.toString());
         System.out.println("element 5 was succesfully added");
+        stack.insert(new Element(8, null));
+        System.out.println(stack.toString());
+        System.out.println("element 6 was succesfully added");
+        stack.insert(new Element(10, null));
+        System.out.println(stack.toString());
+        System.out.println("element 7 was succesfully added");
+        stack.insert(new Element(3, null));
+        System.out.println(stack.toString());
+        System.out.println("element 8 was succesfully added");
 
     }
 
