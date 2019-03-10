@@ -5,7 +5,7 @@ import java.util.Scanner;
 public class Heapsort { 
     public static void main(String[] args) {
 
-	PQ pq = new PQHeapV1(10);
+	PQ pq = new PQHeap(10);
 
 	int n = 0;
 	Scanner sc = new Scanner(System.in);
