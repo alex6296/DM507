@@ -8,8 +8,8 @@ import static java.lang.Math.floor;
  */
 public class PQHeap implements PQ {
 
-    private final int maxSize; //the max number of knots
-    private int size = 1; // the current amount of knots
+    private final int length; //the max number of knots
+    private int heapSize = 1; // the current amount of knots
     private final Element[] heap; //the array
 
     /**
@@ -18,7 +18,7 @@ public class PQHeap implements PQ {
      * @param maxElms maximum number of element there can be in the heap.
      */
     public PQHeap(int maxElms) {
-        maxSize = maxElms;
+        length = maxElms;
         heap = new Element[maxElms];
     }
 
@@ -31,8 +31,8 @@ public class PQHeap implements PQ {
     public Element extractMin() {
         //TODO
          Element max = heap[1];
-         heap[1] = heap[size-1];
-         size = size -1;
+         heap[1] = heap[heapSize-1];
+         heapSize = heapSize -1;
          minHeapify(1);
          return max;
         
@@ -47,17 +47,17 @@ public class PQHeap implements PQ {
     @Override
     public void insert(Element e) {
         //checks if size limit is reached
-        if (size + 1 >= maxSize) {
+        if (heapSize + 1 >= length) {
             System.out.println("no more space so element " + e.getKey() + " not added");
             return;
         }
         //insert new element
-        heap[size] = e;
+        heap[heapSize] = e;
 
         //sort
-        System.out.println("size: " + size);
-        minHeapify(getParent(size));
-        size++;
+        System.out.println("size: " + heapSize);
+        minHeapify(getParent(heapSize));
+        heapSize++;
     }
 
     /**
