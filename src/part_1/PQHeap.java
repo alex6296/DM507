@@ -30,11 +30,11 @@ public class PQHeap implements PQ {
     @Override
     public Element extractMin() {
         //TODO
-        Element max = heap[1];
+         Element max = heap[1];
         heap[1] = heap[heapSize];
         heapSize = heapSize - 1;
-        minHeapify(1);
-        return max;
+         minHeapify(1);
+         return max;
 
     }
 
