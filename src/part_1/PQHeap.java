@@ -1,7 +1,6 @@
 package part_1;
 
 import static java.lang.Math.floor;
-//Yo
 /**
  *
  * @author Alex Skotner

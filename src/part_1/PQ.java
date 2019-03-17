@@ -10,6 +10,7 @@ package part_1;
  *
  * @author Administrator
  */
+
 public interface PQ {
     public Element extractMin();
     public void insert(Element e);

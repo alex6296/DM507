@@ -10,7 +10,6 @@ package part_1;
  *
  * @author Administrator
  */
-//yoyo
 public class Element {
     private int key;
     private Object data;
