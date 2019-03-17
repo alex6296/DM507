@@ -31,7 +31,7 @@ public class PQHeap implements PQ {
     public Element extractMin() {
         //TODO
          Element max = heap[1];
-         heap[1] = heap[size];
+         heap[1] = heap[size-1];
          size = size -1;
          minHeapify(1);
          return max;
