@@ -29,10 +29,12 @@ public class PQHeap implements PQ {
      */
     @Override
     public Element extractMin() {
-
+        //Defining variables
         Element min = heap[1];
+        //setting the extracted value as the last value in the array
         heap[1] = heap[heapSize];
         heapSize = heapSize - 1;
+        //ordering the heap according to the rules
         minHeapify(1);
         return min;
     }
@@ -78,12 +80,14 @@ public class PQHeap implements PQ {
      */
     @Override
     public void insert(Element e) {
+        //increases the size of the heap and inserts the element into the heap
         heapSize++;
         heap[heapSize] = e;
         heapIncreaceKey(heapSize, e);
     }
 
     private void heapIncreaceKey(int i, Element e) {
+        //increases the selected key of the element e
         if (e.getKey() > heap[i].getKey()) {
             System.out.println("error key is bigger then current key");
             return;
@@ -112,6 +116,7 @@ public class PQHeap implements PQ {
     }
 
     public void minHeapify(int i) {
+        //defining variables
         int smallest;
         int l = LeftChild(i);
         int r = RightChild(i);
