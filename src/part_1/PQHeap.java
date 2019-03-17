@@ -46,14 +46,14 @@ public class PQHeap implements PQ {
     @Override
     public void insert(Element e) {
         //checks if size limit is reached
-        if (heapSize + 1 >= length) {
+        if (heapSize >= length) {
             return;
         }
         //insert new element
         heap[heapSize] = e;
 
         //sort
-        minHeapify(getParent(heapSize));
+        minHeapify(heapSize);
         heapSize++;
     }
 
@@ -132,10 +132,10 @@ public class PQHeap implements PQ {
         }
         //if only root is null
         if (heap[rootIndex] == null && rightChildElement != null && leftChildElement != null) {
-            if (leftChildElement.getKey() < rightChildElement.getKey()) {
+            if (leftChildElement.getKey() <= rightChildElement.getKey()) {
                 return leftChildIndex;
             } else {
-            return rightChildIndex;
+                return rightChildIndex;
             }
         }
 
