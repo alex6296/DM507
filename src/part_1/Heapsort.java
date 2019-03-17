@@ -2,6 +2,15 @@ package part_1;
 
 import java.util.Scanner;
 
+/**
+ *
+ * segil17 - Sebastian Gildenpfennig
+ * rofra17 - Robert Francisti
+ * askot17 - Alex Skotner
+ * jejoh16 - Jean Johnsen
+ * 
+ */
+
 public class Heapsort { 
     public static void main(String[] args) {
 

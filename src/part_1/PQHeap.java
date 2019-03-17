@@ -4,8 +4,13 @@ import static java.lang.Math.floor;
 
 /**
  *
- * @author Alex Skotner
+ * segil17 - Sebastian Gildenpfennig
+ * rofra17 - Robert Francisti
+ * askot17 - Alex Skotner
+ * jejoh16 - Jean Johnsen
+ * 
  */
+
 public class PQHeap implements PQ {
 
     private final int length; //the max number of knots
@@ -32,7 +37,7 @@ public class PQHeap implements PQ {
         //TODO
          Element max = heap[1];
          heap[1] = heap[heapSize-1];
-         heapSize = heapSize -1;
+         heapSize = heapSize;
          minHeapify(1);
          return max;
         
