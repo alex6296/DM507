@@ -8,7 +8,11 @@ package part_1;
 
 /**
  *
- * @author Administrator
+ * segil17 - Sebastian Gildenpfennig
+ * rofra17 - Robert Francisti
+ * askot17 - Alex Skotner
+ * jejoh16 - Jean Johnsen
+ * 
  */
 
 public interface PQ {

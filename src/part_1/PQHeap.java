@@ -3,7 +3,11 @@ package part_1;
 import static java.lang.Math.floor;
 /**
  *
- * @author Alex Skotner
+ * segil17 - Sebastian Gildenpfennig
+ * rofra17 - Robert Francisti
+ * askot17 - Alex Skotner
+ * jejoh16 - Jean Johnsen
+ * 
  */
 public class PQHeap implements PQ {
 
@@ -157,16 +161,14 @@ public class PQHeap implements PQ {
             return rootIndex;
         }
     }
-
-    /**
-     * compares a tree with only 1 child.
-     *
-     * @param rootIndex
-     * @param rootKey
-     * @param leftChieldIndex
-     * @param leftChildKey
-     * @return the index of the node with the smallest key
-     */
+/**
+ * compares a tree with only 1 child.
+ * @param rootIndex
+ * @param rootKey
+ * @param leftChieldIndex
+ * @param leftChildKey
+ * @return  the index of the node with the smallest key
+ */
     private int comparePartialTree(int rootIndex, int rootKey, int leftChieldIndex, int leftChildKey) {
         if (leftChildKey < rootKey) {
             return leftChieldIndex;
@@ -174,18 +176,16 @@ public class PQHeap implements PQ {
             return rootIndex;
         }
     }
-
-    /**
-     * compares a full sub-tree
-     *
-     * @param rootIndex
-     * @param rootKey
-     * @param leftChieldIndex
-     * @param leftChildKey
-     * @param rightChildIndex
-     * @param rightChildKey
-     * @return the index of the node with the smallest key
-     */
+/**
+ * compares a full sub-tree
+ * @param rootIndex
+ * @param rootKey
+ * @param leftChieldIndex
+ * @param leftChildKey
+ * @param rightChildIndex
+ * @param rightChildKey
+ * @return the index of the node with the smallest key
+ */
     private int compareFullSubTree(int rootIndex, int rootKey, int leftChieldIndex, int leftChildKey, int rightChildIndex, int rightChildKey) {
         //TODO COMPARE CHIELDS
         int smallest;
@@ -203,13 +203,12 @@ public class PQHeap implements PQ {
         //check if right child is smaller then left
         return smallest;
     }
-
-    /**
-     * sorts the heap.
+/**
+ * sorts the heap. 
      *
      * @param RootIndex the index of the root of the sub-tree to start the heap
      * sort from.
-     */
+ */
     private void minHeapify(int RootIndex) {
         //vars
         Integer leftChildIndex;
@@ -260,4 +259,4 @@ public class PQHeap implements PQ {
         return sb.toString();
     }
 
-}
+    }
