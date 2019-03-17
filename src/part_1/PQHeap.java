@@ -71,14 +71,6 @@ public class PQHeap implements PQ {
         return currentNodeIndex * 2 + 1;
     }
 
-    private boolean isRoot(Element[] A, int i) {
-        if (A[Parent(i)] != null) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     /**
      * insets an element to the heap and sorts it.
      *
