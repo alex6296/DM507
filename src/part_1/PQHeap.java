@@ -30,7 +30,12 @@ public class PQHeap implements PQ {
     @Override
     public Element extractMin() {
         //TODO
-        return heap[1];
+         Element max = heap[1];
+         heap[1] = heap[size];
+         size = size -1;
+         minHeapify(1);
+         return max;
+        
 
     }
 
@@ -295,6 +300,10 @@ public class PQHeap implements PQ {
         stack.insert(new Element(2, null));
         System.out.println(stack.toString());
         System.out.println("element 8 was succesfully added");
+        System.out.println("Extracting min value");
+        stack.extractMin();
+        System.out.println(stack.toString());
+        
 
     }
 }
