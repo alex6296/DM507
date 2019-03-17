@@ -7,7 +7,7 @@ import static java.lang.Math.floor;
  * @author Alex Skotner
  */
 public class PQHeap implements PQ {
-    
+
     public final int length; //the max number of knots
     public int heapSize = 0; // the current amount of knots
     public final Element[] heap; //the array
@@ -29,7 +29,7 @@ public class PQHeap implements PQ {
      */
     @Override
     public Element extractMin() {
-        
+
         Element min = heap[1];
         heap[1] = heap[heapSize];
         heapSize = heapSize - 1;
@@ -70,7 +70,7 @@ public class PQHeap implements PQ {
     private int RightChild(int currentNodeIndex) {
         return currentNodeIndex * 2 + 1;
     }
-    
+
     private boolean isRoot(Element[] A, int i) {
         if (A[Parent(i)] != null) {
             return false;
@@ -90,14 +90,14 @@ public class PQHeap implements PQ {
         heap[heapSize] = e;
         heapIncreaceKey(heapSize, e);
     }
-    
+
     private void heapIncreaceKey(int i, Element e) {
         if (e.getKey() > heap[i].getKey()) {
             System.out.println("error key is bigger then current key");
             return;
         }
         heap[i] = e;
-        while (i > 1 && heap[Parent(i)].getKey()>heap[i].getKey()) {            
+        while (i > 1 && heap[Parent(i)].getKey() > heap[i].getKey()) {
             exchange(i, Parent(i));
             i = Parent(i);
         }
@@ -118,17 +118,17 @@ public class PQHeap implements PQ {
         //changes the original smallest to the root
         heap[smallestIndex] = tempRoot;
     }
-    
+
     public void minHeapify(int i) {
         int smallest;
         int l = LeftChild(i);
         int r = RightChild(i);
-        if (l >= heapSize && heap[l].getKey() < heap[i].getKey()) {
+        if (l > heapSize && heap[l].getKey() < heap[i].getKey()) {
             smallest = l;
         } else {
             smallest = i;
         }
-        if (r >= heapSize && heap[r].getKey() < heap[smallest].getKey()) {
+        if (r > heapSize && heap[r].getKey() < heap[smallest].getKey()) {
             smallest = r;
         }
         if (smallest != i) {
@@ -136,14 +136,14 @@ public class PQHeap implements PQ {
             minHeapify(smallest);
         }
     }
-    
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        
+
         for (Element e : heap) {
             if (e != null) {
-                
+
                 sb.append(e.getKey());
                 sb.append(". ");
                 sb.append("[");
@@ -151,10 +151,10 @@ public class PQHeap implements PQ {
                 sb.append("]");
                 sb.append("\n");
             }
-            
+
         }
-        
+
         return sb.toString();
     }
-    
+
 }
