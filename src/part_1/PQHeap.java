@@ -123,12 +123,12 @@ public class PQHeap implements PQ {
         int smallest;
         int l = LeftChild(i);
         int r = RightChild(i);
-        if (l > heapSize && heap[l].getKey() < heap[i].getKey()) {
+        if (l <= heapSize && heap[l].getKey() < heap[i].getKey()) {
             smallest = l;
         } else {
             smallest = i;
         }
-        if (r > heapSize && heap[r].getKey() < heap[smallest].getKey()) {
+        if (r <= heapSize && heap[r].getKey() < heap[smallest].getKey()) {
             smallest = r;
         }
         if (smallest != i) {
