@@ -33,6 +33,7 @@ public class DictBinTree implements Dict {
         Node x = root; //pointer
         Node y = null; //trailing pointer 
 
+        //recursive loop looking for an null chield node
         while (x != null) {
             y = x;
             if (z.key < x.key) {
@@ -43,6 +44,7 @@ public class DictBinTree implements Dict {
         }
         //z.p = y; //sets the parrent of the new value to y
 
+        //inserts new node as chield to the leaf node found by the recursive loop
         if (y == null) {
             root = z; //treee was empty   
         } else if (z.getKey() < y.getKey()) {
@@ -53,6 +55,11 @@ public class DictBinTree implements Dict {
 
     }
 
+    /**
+     * Gives an full list of itemes contained wrapper method for InorderTreeWalk
+     *
+     * @return int[] of sorted list
+     */
     @Override
     public int[] orderedTraversal() {
         result = new int[length];
@@ -61,6 +68,12 @@ public class DictBinTree implements Dict {
         return result;
     }
 
+    /**
+     * treverses a sub-tree and makes recursive call to the chieldren of the
+     * subtree
+     *
+     * @param m sub-tree root
+     */
     private void inorderTreeWalk(Node n) {
         if (n != null) {
             inorderTreeWalk(n.getLeftChield());
@@ -72,6 +85,11 @@ public class DictBinTree implements Dict {
         }
     }
 
+    /**
+     *look if the tree contaions a given value
+     * @param k key value
+     * @return boolean 
+     */
     @Override
     public boolean search(int k) {
         Node result = treeSearch(k, root);
@@ -81,7 +99,12 @@ public class DictBinTree implements Dict {
             return true;
         }
     }
-
+/**
+ * Looks for a given key in all subtrees of a Node
+ * @param key that need to be fould
+ * @param parent node that will be seached below
+ * @return Node 
+ */
     private Node treeSearch(int key, Node parent) {
         if (parent == null || parent.getKey() == key) {
             return parent;
@@ -92,7 +115,9 @@ public class DictBinTree implements Dict {
             return treeSearch(key, parent.rightChield);
         }
     }
-
+/**
+ * a node in the BinaryTree
+ */
     public class Node {
 
         private int key;
