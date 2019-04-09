@@ -1,34 +1,38 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+ * segil17@student.sdu.dk - Sebastian Gildenpfennig
+ * rofra17@student.sdu.dk - Robert Francisti
+ * askot17@student.sdu.dk - Alex Skotner
  */
 package part_2;
 
-import java.util.ArrayList;
-
-/**
- *
- * @author Lenovo
- */
 public class DictBinTree implements Dict {
 
     private Node root; //header object
     private int length = 0; //number of nodes in tree
 
-    int[] result;
-    private int count;
+    int[] result; //return value for orderedTraversal
+    private int count; //amoubnt of nodes travered in orderedTraversal
 
+    /**
+     * non-args constructor
+     */
     public DictBinTree() {
     }
 
+    /**
+     * inserts an element in the binary tree
+     *
+     * @param k the key that is used to sort the element
+     */
     @Override
     public void insert(int k) {
-        length++;
-        Node z = new Node(k);
 
-        Node y = null;
-        Node x = root;
+        length++;
+        Node z = new Node(k); //transforms the given parameter to a node object
+
+        Node x = root; //pointer
+        Node y = null; //trailing pointer 
+
         while (x != null) {
             y = x;
             if (z.key < x.key) {
