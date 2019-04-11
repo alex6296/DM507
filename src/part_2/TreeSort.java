@@ -1,11 +1,78 @@
 /*
- * segil17@student.sdu.dk - Sebastian Gildenpfennig
- * rofra17@student.sdu.dk - Robert Francisti
- * askot17@student.sdu.dk - Alex Skotner
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
  */
 package part_2;
 
-public class DictBinTree implements Dict {
+import java.util.Scanner;
+
+/**
+ *
+ * @author robert
+ */
+public class TreeSort  {
+
+    
+    static DictBinTree db;
+
+    public TreeSort() {
+           db = new DictBinTree();
+    }
+      
+
+    
+    
+    public static void main(String[] args) {
+        
+        
+	int n = 0;
+	Scanner sc = new Scanner(System.in);
+        
+	while (sc.hasNextInt()) {
+            db.insert(sc.nextInt());
+	    n++;
+       }
+        for (int v : db.orderedTraversal()) {            
+            System.out.println(v);
+        }
+        
+        
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    public void sortingAlgorithm(){
+        
+        int counter = 0;
+  
+       while(counter < 30){
+            db.insert(counter);
+            System.out.println(counter + " has been inserted into the dictionary" + db);
+            counter++;
+            System.out.println("counter is now " + counter );
+        }
+        for (int b : db.orderedTraversal()) {
+            
+            System.out.println(b);
+        }
+        
+      
+    }
+    
+   
+    private class DictBinTree  {
 
     private Node root; //header object
     private int length = 0; //number of nodes in tree
@@ -24,7 +91,7 @@ public class DictBinTree implements Dict {
      *
      * @param k the key that is used to sort the element
      */
-    @Override
+    
     public void insert(int k) {
 
         length++;
@@ -60,7 +127,6 @@ public class DictBinTree implements Dict {
      *
      * @return int[] of sorted list
      */
-    @Override
     public int[] orderedTraversal() {
         result = new int[length];
         count = 0;
@@ -90,7 +156,7 @@ public class DictBinTree implements Dict {
      * @param k key value
      * @return boolean 
      */
-    @Override
+    
     public boolean search(int k) {
         Node result = treeSearch(k, root);
         if (result == null) {
@@ -168,3 +234,6 @@ public class DictBinTree implements Dict {
 
     }
 }
+     
+}
+
