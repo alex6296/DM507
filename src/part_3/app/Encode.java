@@ -63,25 +63,24 @@ public class Encode {
         }
 
         System.out.println("--huffmanify ---");
-        
+
         Knot root = huffmanify(inputArray); //OPGAVE 2
-        
+
         System.out.println("- root node -");
         System.out.println("root = " + root);
         System.out.println("value = " + root.value);
         System.out.println("freq = " + root.freq);
         System.out.println("leftchild = " + root.leftChield);
         System.out.println("righchild = " + root.rightChield);
-        
-
         System.exit(0);
+
         tablefy(root); //OPGAVE 3 
         System.out.println("---tablefy---");
         for (Integer i : codeMapping.keySet()) {
             System.out.println(i + " : " + codeMapping.get(i));
         }
 
-        System.exit(0); 
+        System.exit(0);
         //compress(); //OPGAVE 4
     }
 
@@ -118,9 +117,9 @@ public class Encode {
             Q.insert(e);
         }
         System.out.println("iniz. Q.size = " + Q.getHeapSize());
-        
+
         int lc = 0, rc = 0;
-        
+
         //huffman alg.
         for (int i = 0; i < Q.getHeapSize() - 1; i++) {
 
@@ -148,14 +147,16 @@ public class Encode {
             }
 
             //combinde freq
-            Knot k = new Knot(x.value + y.value, x.freq + y.freq);
-            Element e = new Element(k.freq, k);
+            z.freq = x.freq + y.freq;
+            z.value = x.value + y.value;
+
+            Element e = new Element(z.freq, z);
             //insert combined knot to Q
             Q.insert(e);
         }
         System.out.println("- child count -");
-        System.out.println("leftChild = "+lc);
-         System.out.println("rightChild = "+rc);
+        System.out.println("leftChild = " + lc);
+        System.out.println("rightChild = " + rc);
         return (Knot) Q.extractMin().data;
     }
 
@@ -172,6 +173,7 @@ public class Encode {
             treeWalk(n.getRightChield());
         }
     }
+
 
     private void compress() {
 
