@@ -28,7 +28,7 @@ public class Encode {
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
     int SIZE = 255;
-    private static final boolean TESTMODE = true; //change to false for less sout information
+    private static final boolean TESTMODE = false; //change to false for less sout information
 
     //VARS
     private final Map<Integer, Integer> codeMapping = new HashMap<>();
@@ -68,14 +68,16 @@ public class Encode {
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
             Knot k = new Knot(charValue, inputArray[charValue]);
             Element e = new Element(k.freq, k);
-            Q.insert(e);
+            if (k.freq != 0) {
+                Q.insert(e);
+            }
+
         }
         System.out.println("iniz. Q.size = " + Q.getHeapSize());
 
         Knot root = huffmanify(Q); //OPGAVE 2
 
         System.out.println("\n- root node -");
-        System.out.println("root = " + root);
         System.out.println("value = " + root.value);
         System.out.println("freq = " + root.freq);
 
@@ -117,17 +119,21 @@ public class Encode {
         int n = C.getHeapSize();
         PQ Q = C;
 
-        for (int i = 1; i < n - 1; i++) {
+        for (int i = 1; i < n; i++) {
 
+            System.out.println("-- loop " + i + "--");
+            System.out.println("heapsize = " + C.getHeapSize());
             //new node
             int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
 
             //try to add Chielden
             Knot y, x;
-            z.setLeftChield(x = Q.extractMin().data);      //try to add leftChield
-            z.setRightChield(y = Q.extractMin().data); //try to add rightChield
-            //combinde freq
+            x = Q.extractMin().getData();
+            z.setLeftChield(x);  //try to add leftChield
+            y = Q.extractMin().getData();
+            z.setRightChield(y); //try to add rightChield
+
             z.freq = x.freq + y.freq;
             z.value = x.value + y.value;
 
@@ -135,7 +141,8 @@ public class Encode {
             Element e = new Element(z.freq, z);
             Q.insert(e);
         }
-        return (Knot) Q.extractMin().data;
+
+        return Q.extractMin().data;
     }
 
     private void tablefy(Knot hufmanTree) {
@@ -389,6 +396,7 @@ public class Encode {
             heap = new Element[maxElms];
         }
 
+        @Override
         public int getHeapSize() {
             return heapSize;
         }
@@ -413,11 +421,6 @@ public class Encode {
 
         }
 
-        /**
-         * insets an element to the heap and sorts it.
-         *
-         * @param Element
-         */
         @Override
         public void insert(Element e) {
             //checks if size limit is reached
@@ -650,7 +653,7 @@ public class Encode {
             return this.key;
         }
 
-        public Object getData() {
+        public Knot getData() {
             return this.data;
         }
     }
