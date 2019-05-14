@@ -69,7 +69,7 @@ public class Encode {
 
         }
 
-        System.out.println("--huffmanify ---");
+        System.out.println("--- huffmanify ---");
         //transform array to PQHeap
         PQ Q = new PQHeap(SIZE + 10);
 
@@ -84,13 +84,13 @@ public class Encode {
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
 
-        System.out.println("---tablefy---");
+        System.out.println("--- tablefy ---");
         tablefy(root); //OPGAVE 3 
         System.out.println("- dict -");
         codeMapping.keySet().forEach((i) -> {
             System.out.println(i + " : " + codeMapping.get(i));
         });
-        System.out.println("---compress---");
+        System.out.println("--- compress ---");
         compress(args/*args[0]*/); //OPGAVE 4
     }
 
@@ -169,6 +169,8 @@ public class Encode {
     }
 
     private void treeWalk(Knot root) {
+        //TODO figure out why an elements appears twise
+        //TODO implement the huffman 0 and 1 namings as byte translations
         if (root != null) {
             treeWalk(root.getLeftChield());
 
@@ -185,18 +187,21 @@ public class Encode {
     }
 
     private void compress(String[] args) throws FileNotFoundException, IOException {
-        //TEST DIC
+        //TEST DICT
         Map<Integer, Integer> tempMap = new HashMap<>();
         tempMap.put(97, 00);
         tempMap.put(99, 01);
         tempMap.put(115, 10);
         tempMap.put(116, 11);
-         //TEST DIC
+         //TEST DICT
+        
+        //TODO should used bitoutputstream
 
         // Open input and output byte streams to/from files.
+        //IN
         FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
         BufferedInputStream reader = new BufferedInputStream(inFile);
-
+        //OUT
         BufferedWriter out = new BufferedWriter(new FileWriter(FILEOUTPUT));
 
         //write output to file
@@ -206,13 +211,16 @@ public class Encode {
             System.out.println("i = " + i);
             int code = tempMap.get(i);
             System.out.println("code = " + code);
-
+            
+            //TODO figure out why outputs are squares
+            
             //write to file
             out.write(code);
             
             //next
             i = reader.read();
         }
+        //  close
         reader.close();
         out.close();
     }
