@@ -1,14 +1,20 @@
 package part_3.app;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import static java.lang.Math.floor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -173,6 +179,7 @@ public class Encode {
                     System.out.println("    " + root.value + " : " + root.freq);
                 }
             }
+            
             treeWalk(root.getRightChield());
         }
     }
@@ -190,23 +197,22 @@ public class Encode {
         FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
         BufferedInputStream reader = new BufferedInputStream(inFile);
 
-        FileOutputStream outFile = new FileOutputStream(FILEOUTPUT)/*args[1]*/;
-        BitOutputStream out = new BitOutputStream(outFile);
-        
+        BufferedWriter out = new BufferedWriter(new FileWriter(FILEOUTPUT));
+
         //write output to file
         int i = i = reader.read();
         while (i != -1) {
-            System.out.println("i=" + i);
-            out.writeInt(i);
-
+            //write code out
+            System.out.println("i = " + i);
             int code = tempMap.get(i);
             System.out.println("code = " + code);
-            out.writeInt(code);
 
+            //write to file
+            out.write(code);
+            
+            //next
             i = reader.read();
-
         }
-
         reader.close();
         out.close();
     }
