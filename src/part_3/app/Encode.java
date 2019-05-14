@@ -71,15 +71,11 @@ public class Encode {
             if (k.freq != 0) {
                 Q.insert(e);
             }
-
         }
-        System.out.println("iniz. Q.size = " + Q.getSize());
 
         Knot root = huffmanify(Q); //OPGAVE 2
-
-        System.out.println("\n- root node -");
-        System.out.println("value = " + root.value);
-        System.out.println("freq = " + root.freq);
+        System.out.println("root.value = " + root.value);
+        System.out.println("root.freq = " + root.freq);
 
         System.exit(0);
 
@@ -119,10 +115,13 @@ public class Encode {
         int n = C.getSize();
         PQ Q = C;
 
-        for (int i = 1; i < n - 1; i++) {
+        for (int i = 0; i < n - 1; i++) {
 
-            System.out.println("-- loop " + i + "--");
-            System.out.println("heapsize = " + C.getSize());
+            if (TESTMODE) {
+                System.out.println("-- loop " + i + "--");
+                System.out.println("heapsize = " + C.getSize());
+            }
+
             //new node
             int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
@@ -136,7 +135,7 @@ public class Encode {
                 z.value += x.value;
             } catch (NullPointerException e) {
             }
-            
+
             try {
                 y = Q.extractMin().getData();
                 z.setRightChield(y);  //try to add leftChield
@@ -145,13 +144,19 @@ public class Encode {
             } catch (NullPointerException e) {
             }
 
-
             //insert combined knot to Q
             Element e = new Element(z.freq, z);
             Q.insert(e);
         }
 
-        return Q.extractMin().data;
+        Knot r = Q.extractMin().data;
+
+        if (TESTMODE) {
+            System.out.println("at end heap.size() = " + Q.getSize());
+
+        }
+
+        return r;
     }
 
     private void tablefy(Knot hufmanTree) {
@@ -412,11 +417,11 @@ public class Encode {
          */
         @Override
         public Element extractMin() {
-            
+
             if (length <= 0) {
                 return null;
             }
-            
+
             Element min = heap[1]; //set min equal to the smallest element in the heap
             heap[1] = heap[length]; //takes the biggest element and set it as the root
             length = length - 1; //reduces the length by 1, due to the removal of the smallest element
