@@ -1,31 +1,26 @@
-package part_3.app;
-
-import java.io.BufferedInputStream;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import static java.lang.Math.floor;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+package part_3.app;
+
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import static java.lang.Math.floor;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- * 1
  *
- * @author Administrator
+ * @author Lenovo
  */
-public class Encode {
+public class Decode {
 
     //TEST
     private static final File FILEINPUT = new File("input.txt");
@@ -34,16 +29,13 @@ public class Encode {
 
     private static final boolean TESTMODE = false; //change to false for less sout information
 
-    //VARS
-    private final Map<Integer, Integer> codeMapping = new HashMap<>();
-
     public static void main(String[] args) {
-        Encode e = new Encode();
+        Decode e = new Decode();
 
         try {
             e.run(args);
         } catch (Exception ex) {
-            Logger.getLogger(Encode.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Decode.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -66,27 +58,21 @@ public class Encode {
 
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
-        PQ Q = new PQHeap(SIZE + 10);
+        Decode.PQ Q = new Decode.PQHeap(SIZE + 10);
 
         //insert all bytes in PQ
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
-            Knot k = new Knot(charValue, inputArray[charValue]);
-            Element e = new Element(k.freq, k);
+            Decode.Knot k = new Decode.Knot(charValue, inputArray[charValue]);
+            Decode.Element e = new Decode.Element(k.freq, k);
             Q.insert(e);
         }
 
-        Knot root = huffmanify(Q); //OPGAVE 2
+        Decode.Knot root = huffmanify(Q); //OPGAVE 2
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
+        
+        deCode(args); // part 3
 
-        System.out.println("--- tablefy ---");
-        tablefy(root); //OPGAVE 3 
-        System.out.println("- dict -");
-        codeMapping.keySet().forEach((i) -> {
-            System.out.println(i + " : " + codeMapping.get(i));
-        });
-        System.out.println("--- compress ---");
-        compress(args/*args[0]*/); //OPGAVE 4
     }
 
     private int[] getInput(String[] args) throws Exception {
@@ -158,68 +144,9 @@ public class Encode {
         return r;
     }
 
-    private void tablefy(Knot hufmanTree) {
-        System.out.println("- value : freq -");
-        treeWalk(hufmanTree);
+    private void deCode(String[] args) throws FileNotFoundException, IOException {
+    //TODO IF THIS IS SOLVED IN THIS FILE PORT TO THE OTHER
     }
-
-    private void treeWalk(Knot root) {
-        //TODO figure out why an elements appears twise
-        //TODO implement the huffman 0 and 1 namings as byte translations
-        if (root != null) {
-            treeWalk(root.getLeftChield());
-
-            if (TESTMODE) {
-                System.out.println(root.freq);
-            } else {
-                if (root.freq > 0) {
-                    System.out.println("    " + root.value + " : " + root.freq);
-                }
-            }
-            
-            treeWalk(root.getRightChield());
-        }
-    }
-
-    private void compress(String[] args) throws FileNotFoundException, IOException {
-        //TEST DICT
-        Map<Integer, Integer> tempMap = new HashMap<>();
-        tempMap.put(97, 00);
-        tempMap.put(99, 01);
-        tempMap.put(115, 10);
-        tempMap.put(116, 11);
-         //TEST DICT
-        
-        //TODO should used bitoutputstream
-
-        // Open input and output byte streams to/from files.
-        //IN
-        FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
-        BufferedInputStream reader = new BufferedInputStream(inFile);
-        //OUT
-        BufferedWriter out = new BufferedWriter(new FileWriter(FILEOUTPUT));
-
-        //write output to file
-        int i = i = reader.read();
-        while (i != -1) {
-            //write code out
-            System.out.println("i = " + i);
-            int code = tempMap.get(i);
-            System.out.println("code = " + code);
-            
-            //TODO figure out why outputs are squares
-            
-            //write to file
-            out.write(code);
-            
-            //next
-            i = reader.read();
-        }
-        //  close
-        reader.close();
-        out.close();
-    }
-
     public class Knot {
 
         public int value, freq;
