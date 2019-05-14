@@ -47,7 +47,7 @@ public class Encode {
 
     public void run(String[] args) throws Exception {
 
-        int[] inputArray = getInput(fileInput/*args[0]*/);
+        int[] inputArray = getInput(fileInput/*args[0]*/); // OPGAVE 1
         System.out.println("--input ---");
         System.out.println("index : frequency");
         for (int i = 0; i < inputArray.length; i++) {
@@ -63,17 +63,26 @@ public class Encode {
         }
 
         System.out.println("--huffmanify ---");
-        Knot root = huffmanify(inputArray);
-        System.out.println("root = "+root);
         
-        tablefy(root);
+        Knot root = huffmanify(inputArray); //OPGAVE 2
+        
+        System.out.println("- root node -");
+        System.out.println("root = " + root);
+        System.out.println("value = " + root.value);
+        System.out.println("freq = " + root.freq);
+        System.out.println("leftchild = " + root.leftChield);
+        System.out.println("righchild = " + root.rightChield);
+        
+
+        System.exit(0);
+        tablefy(root); //OPGAVE 3 
         System.out.println("---tablefy---");
         for (Integer i : codeMapping.keySet()) {
             System.out.println(i + " : " + codeMapping.get(i));
         }
 
-        System.exit(0);
-        //compress();
+        System.exit(0); 
+        //compress(); //OPGAVE 4
     }
 
     private int[] getInput(File input) throws Exception {
@@ -101,7 +110,6 @@ public class Encode {
     private Knot huffmanify(int[] inputArray) {
 
         PQ Q = new PQHeap(SIZE + 2);
-        int n = Q.getHeapSize();
 
         //insert all bytes in PQ
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
@@ -109,8 +117,12 @@ public class Encode {
             Element e = new Element(k.freq, k);
             Q.insert(e);
         }
-
-        for (int i = 0; i < n - 1; i++) {
+        System.out.println("iniz. Q.size = " + Q.getHeapSize());
+        
+        int lc = 0, rc = 0;
+        
+        //huffman alg.
+        for (int i = 0; i < Q.getHeapSize() - 1; i++) {
 
             //new node
             int placeHolder = -1;
@@ -121,6 +133,7 @@ public class Encode {
             try {
                 x = (Knot) Q.extractMin().data;
                 z.setLeftChield(x);
+                lc++;
             } catch (NullPointerException e) {
                 x = new Knot(0, 0);
             }
@@ -129,6 +142,7 @@ public class Encode {
             try {
                 y = (Knot) Q.extractMin().data;
                 z.setRightChield(y);
+                rc++;
             } catch (NullPointerException e) {
                 y = new Knot(0, 0);
             }
@@ -139,7 +153,10 @@ public class Encode {
             //insert combined knot to Q
             Q.insert(e);
         }
-        return (Knot)Q.extractMin().data;
+        System.out.println("- child count -");
+        System.out.println("leftChild = "+lc);
+         System.out.println("rightChild = "+rc);
+        return (Knot) Q.extractMin().data;
     }
 
     private void tablefy(Knot hufmanTree) {
