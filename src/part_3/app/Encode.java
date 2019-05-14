@@ -68,9 +68,14 @@ public class Encode {
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
             Knot k = new Knot(charValue, inputArray[charValue]);
             Element e = new Element(k.freq, k);
-            if (k.freq != 0) {
-                Q.insert(e);
+
+            if (TESTMODE) {
+                if (k.freq == 0) {
+                    continue;
+                }
             }
+
+            Q.insert(e);
         }
 
         Knot root = huffmanify(Q); //OPGAVE 2
@@ -117,11 +122,6 @@ public class Encode {
 
         for (int i = 0; i < n - 1; i++) {
 
-            if (TESTMODE) {
-                System.out.println("-- loop " + i + "--");
-                System.out.println("heapsize = " + C.getSize());
-            }
-
             //new node
             int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
@@ -132,7 +132,10 @@ public class Encode {
                 x = Q.extractMin().getData();
                 z.setLeftChield(x);  //try to add leftChield
                 z.freq += x.freq;
-                z.value += x.value;
+                if (x.freq > 0) {
+                    z.value += x.value;
+                }
+
             } catch (NullPointerException e) {
             }
 
@@ -140,7 +143,10 @@ public class Encode {
                 y = Q.extractMin().getData();
                 z.setRightChield(y);  //try to add leftChield
                 z.freq += y.freq;
-                z.value += y.value;
+                if (y.freq > 0) {
+                    z.value += y.value;
+                }
+
             } catch (NullPointerException e) {
             }
 
