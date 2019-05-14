@@ -30,6 +30,7 @@ public class Encode {
     private static File fileInput = new File("input.txt");
     private static File fileOutput = new File("output.txt");
     int SIZE = 255;
+    private static boolean TESTMODE = true; //change to false for less sout information
 
     //VARS
     private Map<Integer, Integer> codeMapping = new HashMap<Integer, Integer>();
@@ -50,16 +51,21 @@ public class Encode {
         System.out.println("--input ---");
         System.out.println("index : frequency");
         for (int i = 0; i < inputArray.length; i++) {
-            if (inputArray[i] != 0) {
+
+            if (TESTMODE) {
                 System.out.println("   " + i + " : " + inputArray[i]);
+            } else {
+                if (inputArray[i] != 0) {
+                    System.out.println("   " + i + " : " + inputArray[i]);
+                }
             }
 
         }
 
         System.out.println("--huffmanify ---");
-        Element root = huffmanify(inputArray);
-        System.out.println("root = " + root.getKey());
-
+        Knot root = huffmanify(inputArray);
+        System.out.println("root = "+root);
+        
         tablefy(root);
         System.out.println("---tablefy---");
         for (Integer i : codeMapping.keySet()) {
@@ -72,6 +78,8 @@ public class Encode {
 
     private int[] getInput(File input) throws Exception {
         int[] result = new int[SIZE];
+
+        //set all elements freq to 0
         for (int i = 0; i < result.length; i++) {
             result[i] = 0;
         }
@@ -80,7 +88,7 @@ public class Encode {
         FileInputStream inFile = new FileInputStream(input);
         BufferedInputStream reader = new BufferedInputStream(inFile);
 
-        //find frequencies
+        //find frequencies [index = charNumber, value = freq.]
         int i = reader.read();
         while (i != -1) {
             result[i]++;
@@ -88,6 +96,68 @@ public class Encode {
         }
 
         return result;
+    }
+
+    private Knot huffmanify(int[] inputArray) {
+
+        PQ Q = new PQHeap(SIZE + 2);
+        int n = Q.getHeapSize();
+
+        //insert all bytes in PQ
+        for (int charValue = 0; charValue < inputArray.length; charValue++) {
+            Knot k = new Knot(charValue, inputArray[charValue]);
+            Element e = new Element(k.freq, k);
+            Q.insert(e);
+        }
+
+        for (int i = 0; i < n - 1; i++) {
+
+            //new node
+            int placeHolder = -1;
+            Knot z = new Knot(placeHolder, placeHolder);
+
+            Knot y, x;
+            //try to add leftChield
+            try {
+                x = (Knot) Q.extractMin().data;
+                z.setLeftChield(x);
+            } catch (NullPointerException e) {
+                x = new Knot(0, 0);
+            }
+
+            //try to add rightChield
+            try {
+                y = (Knot) Q.extractMin().data;
+                z.setRightChield(y);
+            } catch (NullPointerException e) {
+                y = new Knot(0, 0);
+            }
+
+            //combinde freq
+            Knot k = new Knot(x.value + y.value, x.freq + y.freq);
+            Element e = new Element(k.freq, k);
+            //insert combined knot to Q
+            Q.insert(e);
+        }
+        return (Knot)Q.extractMin().data;
+    }
+
+    private void tablefy(Knot hufmanTree) {
+        treeWalk(hufmanTree);
+    }
+
+    private void treeWalk(Knot n) {
+        if (n != null) {
+            treeWalk(n.getLeftChield());
+
+            System.out.println(n.value);
+
+            treeWalk(n.getRightChield());
+        }
+    }
+
+    private void compress() {
+
     }
 
     public class Knot {
@@ -133,98 +203,7 @@ public class Encode {
 
     }
 
-    private Element huffmanify(int[] inputArray) {
-        //build min-heap
-
-        PQ Q = new PQHeap(SIZE + 2);
-        for (int i = 0; i < inputArray.length; i++) {
-            if (inputArray[i] == 0) {
-                continue;
-            }
-            Knot k = new Knot(i, inputArray[i]);
-            Element e = new Element(k.freq, k);
-            Q.insert(e);
-        }
-
-        //huffman alg
-        while (Q.getHeapSize() > 1) {
-
-            int placeHolder = -1;
-
-            Knot z = new Knot(placeHolder, placeHolder); // set freq (used "key" attribute to be freq)
-            Knot y, x;
-
-            try {
-                x = (Knot) Q.extractMin().data;
-                z.setLeftChield(x);
-            } catch (NullPointerException e) {
-                x = new Knot(0, 0);
-            }
-
-            try {
-                y = (Knot) Q.extractMin().data;
-                z.setRightChield(y);
-            } catch (NullPointerException e) {
-                y = new Knot(0, 0);
-            }
-
-            //combinde freq
-            Knot k = new Knot(x.value + y.value, x.freq + y.freq);
-            Element e = new Element(k.freq, k);
-
-            Q.insert(e);
-
-            System.out.println("Q.size() = " + Q.getHeapSize() + " root : " + e.getKey());
-
-        }
-        return Q.extractMin();
-    }
-
-    private void tablefy(Element hufmanTree) {
-        //root
-        Knot root = (Knot) hufmanTree.getData();
-        //string building
-        StringBuilder sb = new StringBuilder();
-   
-
-        ArrayList<Knot> RighClildren = new ArrayList<>();
-
-        treeWalk(root);
-        
-    }
-         char zero = '0', one = '1';
-        int leftCount = 0, rightCount = 0;
-
-        
-        private void treeWalk(Knot n) {
-            if (n != null) {
-               treeWalk(n.getLeftChield());
-               String code;
-               leftCount++;
-               StringBuilder sb = new StringBuilder();
-                System.out.println("leftcount = "+leftCount);
-                for (int i = 0; i < leftCount; i++) {
-                    sb.append(zero);
-                }
-                code =sb.toString();
-                System.out.println("code = "+code);
-               
-               int intCode = Integer.parseInt(code);
-               codeMapping.put(n.value,intCode);
-                
-
-                treeWalk(n.getRightChield());
-            }
-        }
-        
-
-    
-
-    private void compress() {
-
-    }
-
-    // DICT 
+// DICT 
     public interface Dict {
 
         public void insert(int k);
@@ -401,7 +380,7 @@ public class Encode {
 
     }
 
-    //PQ HEAP
+//PQ HEAP
     public interface PQ {
 
         public Element extractMin();
