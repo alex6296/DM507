@@ -3,12 +3,10 @@ package part_3.app;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.Math.floor;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
@@ -27,13 +25,13 @@ import java.util.logging.Logger;
 public class Encode {
 
     //TEST
-    private static File fileInput = new File("input.txt");
-    private static File fileOutput = new File("output.txt");
+    private static final File FILEINPUT = new File("input.txt");
+    private static final File FILEOUTPUT = new File("output.txt");
     int SIZE = 255;
-    private static boolean TESTMODE = true; //change to false for less sout information
+    private static final boolean TESTMODE = true; //change to false for less sout information
 
     //VARS
-    private Map<Integer, Integer> codeMapping = new HashMap<Integer, Integer>();
+    private final Map<Integer, Integer> codeMapping = new HashMap<>();
 
     public static void main(String[] args) {
         Encode e = new Encode();
@@ -47,7 +45,7 @@ public class Encode {
 
     public void run(String[] args) throws Exception {
 
-        int[] inputArray = getInput(fileInput/*args[0]*/); // OPGAVE 1
+        int[] inputArray = getInput(FILEINPUT/*args[0]*/); // OPGAVE 1
         System.out.println("--input ---");
         System.out.println("index : frequency");
         for (int i = 0; i < inputArray.length; i++) {
@@ -63,22 +61,31 @@ public class Encode {
         }
 
         System.out.println("--huffmanify ---");
+        //transform array to PQHeap
+        PQ Q = new PQHeap(SIZE + 10);
 
-        Knot root = huffmanify(inputArray); //OPGAVE 2
+        //insert all bytes in PQ
+        for (int charValue = 0; charValue < inputArray.length; charValue++) {
+            Knot k = new Knot(charValue, inputArray[charValue]);
+            Element e = new Element(k.freq, k);
+            Q.insert(e);
+        }
+        System.out.println("iniz. Q.size = " + Q.getHeapSize());
 
-        System.out.println("- root node -");
+        Knot root = huffmanify(Q); //OPGAVE 2
+
+        System.out.println("\n- root node -");
         System.out.println("root = " + root);
         System.out.println("value = " + root.value);
         System.out.println("freq = " + root.freq);
-        System.out.println("leftchild = " + root.leftChield);
-        System.out.println("righchild = " + root.rightChield);
+
         System.exit(0);
 
         tablefy(root); //OPGAVE 3 
         System.out.println("---tablefy---");
-        for (Integer i : codeMapping.keySet()) {
+        codeMapping.keySet().forEach((i) -> {
             System.out.println(i + " : " + codeMapping.get(i));
-        }
+        });
 
         System.exit(0);
         //compress(); //OPGAVE 4
@@ -106,57 +113,28 @@ public class Encode {
         return result;
     }
 
-    private Knot huffmanify(int[] inputArray) {
+    private Knot huffmanify(PQ C) {
+        int n = C.getHeapSize();
+        PQ Q = C;
 
-        PQ Q = new PQHeap(SIZE + 2);
-
-        //insert all bytes in PQ
-        for (int charValue = 0; charValue < inputArray.length; charValue++) {
-            Knot k = new Knot(charValue, inputArray[charValue]);
-            Element e = new Element(k.freq, k);
-            Q.insert(e);
-        }
-        System.out.println("iniz. Q.size = " + Q.getHeapSize());
-
-        int lc = 0, rc = 0;
-
-        //huffman alg.
-        for (int i = 0; i < Q.getHeapSize() - 1; i++) {
+        for (int i = 1; i < n - 1; i++) {
 
             //new node
-            int placeHolder = -1;
+            int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
 
+            //try to add Chielden
             Knot y, x;
-            //try to add leftChield
-            try {
-                x = (Knot) Q.extractMin().data;
-                z.setLeftChield(x);
-                lc++;
-            } catch (NullPointerException e) {
-                x = new Knot(0, 0);
-            }
-
-            //try to add rightChield
-            try {
-                y = (Knot) Q.extractMin().data;
-                z.setRightChield(y);
-                rc++;
-            } catch (NullPointerException e) {
-                y = new Knot(0, 0);
-            }
-
+            z.setLeftChield(x = Q.extractMin().data);      //try to add leftChield
+            z.setRightChield(y = Q.extractMin().data); //try to add rightChield
             //combinde freq
             z.freq = x.freq + y.freq;
             z.value = x.value + y.value;
 
-            Element e = new Element(z.freq, z);
             //insert combined knot to Q
+            Element e = new Element(z.freq, z);
             Q.insert(e);
         }
-        System.out.println("- child count -");
-        System.out.println("leftChild = " + lc);
-        System.out.println("rightChild = " + rc);
         return (Knot) Q.extractMin().data;
     }
 
@@ -174,7 +152,6 @@ public class Encode {
         }
     }
 
-
     private void compress() {
 
     }
@@ -191,10 +168,7 @@ public class Encode {
         }
 
         public boolean hasLeftChield() {
-            if (leftChield == null) {
-                return false;
-            }
-            return true;
+            return leftChield != null;
         }
 
         public Knot getLeftChield() {
@@ -206,10 +180,7 @@ public class Encode {
         }
 
         public boolean hasRightChield() {
-            if (rightChield == null) {
-                return false;
-            }
-            return true;
+            return rightChield != null;
         }
 
         public Knot getRightChield() {
@@ -251,6 +222,7 @@ public class Encode {
          *
          * @param k the key that is used to sort the element
          */
+        @Override
         public void insert(int k) {
 
             length++;
@@ -287,6 +259,7 @@ public class Encode {
          *
          * @return int[] of sorted list
          */
+        @Override
         public int[] orderedTraversal() {
             result = new int[length];
             count = 0;
@@ -317,13 +290,10 @@ public class Encode {
          * @param k key value
          * @return boolean
          */
+        @Override
         public boolean search(int k) {
-            Node result = treeSearch(k, root);
-            if (result == null) {
-                return false;
-            } else {
-                return true;
-            }
+            Node r = treeSearch(k, root);
+            return r != null;
         }
 
         /**
@@ -368,10 +338,7 @@ public class Encode {
         }
 
         public boolean hasLeftChield() {
-            if (leftChield == null) {
-                return false;
-            }
-            return true;
+            return leftChield != null;
         }
 
         public Node getLeftChield() {
@@ -383,10 +350,7 @@ public class Encode {
         }
 
         public boolean hasRightChield() {
-            if (rightChield == null) {
-                return false;
-            }
-            return true;
+            return rightChield != null;
         }
 
         public Node getRightChield() {
@@ -674,8 +638,8 @@ public class Encode {
 
     public class Element {
 
-        private int key;
-        private Object data;
+        private final int key;
+        private Knot data;
 
         public Element(int i, Knot o) {
             this.key = i;
@@ -755,6 +719,7 @@ public class Encode {
         }
 
         // Closes this stream and the underlying InputStream.
+        @Override
         public void close() throws IOException {
             input.close();
         }
@@ -812,6 +777,7 @@ public class Encode {
         // when this bit stream is not at a byte boundary, then the
         // minimum number of "0" bits (between 0 and 7 of them) are
         // written as padding to reach the next byte boundary.
+        @Override
         public void close() throws IOException {
             while (numBitsInCurrentByte != 0) {
                 writeBit(0);
