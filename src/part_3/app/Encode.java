@@ -3,6 +3,8 @@ package part_3.app;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -27,7 +29,8 @@ public class Encode {
     //TEST
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
-    int SIZE = 255;
+    private int SIZE = 255;
+
     private static final boolean TESTMODE = false; //change to false for less sout information
 
     //VARS
@@ -45,7 +48,7 @@ public class Encode {
 
     public void run(String[] args) throws Exception {
 
-        int[] inputArray = getInput(FILEINPUT/*args[0]*/); // OPGAVE 1
+        int[] inputArray = getInput(args/*args[0]*/); // OPGAVE 1
         System.out.println("--input ---");
         System.out.println("index : frequency");
         for (int i = 0; i < inputArray.length; i++) {
@@ -68,13 +71,6 @@ public class Encode {
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
             Knot k = new Knot(charValue, inputArray[charValue]);
             Element e = new Element(k.freq, k);
-
-            if (TESTMODE) {
-                if (k.freq == 0) {
-                    continue;
-                }
-            }
-
             Q.insert(e);
         }
 
@@ -82,19 +78,17 @@ public class Encode {
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
 
-        System.exit(0);
-
-        tablefy(root); //OPGAVE 3 
         System.out.println("---tablefy---");
+        tablefy(root); //OPGAVE 3 
+        System.out.println("- dict -");
         codeMapping.keySet().forEach((i) -> {
             System.out.println(i + " : " + codeMapping.get(i));
         });
-
-        System.exit(0);
-        //compress(); //OPGAVE 4
+        System.out.println("---compress---");
+        compress(args/*args[0]*/); //OPGAVE 4
     }
 
-    private int[] getInput(File input) throws Exception {
+    private int[] getInput(String[] args) throws Exception {
         int[] result = new int[SIZE];
 
         //set all elements freq to 0
@@ -103,7 +97,7 @@ public class Encode {
         }
 
         // Open input and output byte streams to/from files.
-        FileInputStream inFile = new FileInputStream(input);
+        FileInputStream inFile = new FileInputStream(FILEINPUT/*args[0]*/);
         BufferedInputStream reader = new BufferedInputStream(inFile);
 
         //find frequencies [index = charNumber, value = freq.]
@@ -135,7 +129,6 @@ public class Encode {
                 if (x.freq > 0) {
                     z.value += x.value;
                 }
-
             } catch (NullPointerException e) {
             }
 
@@ -146,7 +139,6 @@ public class Encode {
                 if (y.freq > 0) {
                     z.value += y.value;
                 }
-
             } catch (NullPointerException e) {
             }
 
@@ -166,21 +158,57 @@ public class Encode {
     }
 
     private void tablefy(Knot hufmanTree) {
+        System.out.println("- value : freq -");
         treeWalk(hufmanTree);
     }
 
-    private void treeWalk(Knot n) {
-        if (n != null) {
-            treeWalk(n.getLeftChield());
+    private void treeWalk(Knot root) {
+        if (root != null) {
+            treeWalk(root.getLeftChield());
 
-            System.out.println(n.value);
-
-            treeWalk(n.getRightChield());
+            if (TESTMODE) {
+                System.out.println(root.freq);
+            } else {
+                if (root.freq > 0) {
+                    System.out.println("    " + root.value + " : " + root.freq);
+                }
+            }
+            treeWalk(root.getRightChield());
         }
     }
 
-    private void compress() {
+    private void compress(String[] args) throws FileNotFoundException, IOException {
+        //TEST DIC
+        Map<Integer, Integer> tempMap = new HashMap<>();
+        tempMap.put(97, 00);
+        tempMap.put(99, 01);
+        tempMap.put(115, 10);
+        tempMap.put(116, 11);
+         //TEST DIC
 
+        // Open input and output byte streams to/from files.
+        FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
+        BufferedInputStream reader = new BufferedInputStream(inFile);
+
+        FileOutputStream outFile = new FileOutputStream(FILEOUTPUT)/*args[1]*/;
+        BitOutputStream out = new BitOutputStream(outFile);
+        
+        //write output to file
+        int i = i = reader.read();
+        while (i != -1) {
+            System.out.println("i=" + i);
+            out.writeInt(i);
+
+            int code = tempMap.get(i);
+            System.out.println("code = " + code);
+            out.writeInt(code);
+
+            i = reader.read();
+
+        }
+
+        reader.close();
+        out.close();
     }
 
     public class Knot {
