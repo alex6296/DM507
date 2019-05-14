@@ -73,7 +73,7 @@ public class Encode {
             }
 
         }
-        System.out.println("iniz. Q.size = " + Q.getHeapSize());
+        System.out.println("iniz. Q.size = " + Q.getSize());
 
         Knot root = huffmanify(Q); //OPGAVE 2
 
@@ -116,26 +116,35 @@ public class Encode {
     }
 
     private Knot huffmanify(PQ C) {
-        int n = C.getHeapSize();
+        int n = C.getSize();
         PQ Q = C;
 
-        for (int i = 1; i < n-1; i++) {
+        for (int i = 1; i < n - 1; i++) {
 
             System.out.println("-- loop " + i + "--");
-            System.out.println("heapsize = " + C.getHeapSize());
+            System.out.println("heapsize = " + C.getSize());
             //new node
             int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
 
             //try to add Chielden
             Knot y, x;
-            x = Q.extractMin().getData();
-            z.setLeftChield(x);  //try to add leftChield
-            y = Q.extractMin().getData();
-            z.setRightChield(y); //try to add rightChield
+            try {
+                x = Q.extractMin().getData();
+                z.setLeftChield(x);  //try to add leftChield
+                z.freq += x.freq;
+                z.value += x.value;
+            } catch (NullPointerException e) {
+            }
+            
+            try {
+                y = Q.extractMin().getData();
+                z.setRightChield(y);  //try to add leftChield
+                z.freq += y.freq;
+                z.value += y.value;
+            } catch (NullPointerException e) {
+            }
 
-            z.freq = x.freq + y.freq;
-            z.value = x.value + y.value;
 
             //insert combined knot to Q
             Element e = new Element(z.freq, z);
@@ -377,170 +386,174 @@ public class Encode {
 
         public void insert(Element e);
 
-        public int getHeapSize();
+        public int getSize();
     }
 
     public class PQHeap implements PQ {
 
-    public final int heapSize; // the current amount of knots
-    public int length = 0; //the max number of knots
-    public final Element[] heap; //the array
+        public final int heapSize; // the current amount of knots
+        public int length = 0; //the max number of knots
+        public final Element[] heap; //the array
 
-    /**
-     * Constructor
-     *
-     * @param maxElms maximum number of element there can be in the heap.
-     */
-    public PQHeap(int maxElms) {
-        heapSize = maxElms; //caps the size of the heap
-        heap = new Element[maxElms]; //initializes the heap
-    }
-
-    /**
-     * removes the smallest element in the heap and returns it
-     *
-     * @return Element
-     */
-    @Override
-    public Element extractMin() {
-
-        Element min = heap[1]; //set min equal to the smallest element in the heap
-        heap[1] = heap[length]; //takes the biggest element and set it as the root
-        length = length - 1; //reduces the length by 1, due to the removal of the smallest element
-        minHeapify(1); //validates the structure of the heap
-        return min;
-    }
-
-    /**
-     * Returns the index of the parent to given parameter
-     *
-     * @param currentNodeIndex
-     * @return int index of the parent node
-     */
-    private int Parent(int currentNodeIndex) {
-        int value = (int) floor(currentNodeIndex / 2);
-        return value;
-    }
-
-    /**
-     * Acquires left child to given parameter
-     *
-     * @param currentNodeIndex
-     * @return int index of the left child
-     */
-    private int LeftChild(int currentNodeIndex) {
-        return (currentNodeIndex * 2);
-    }
-
-    /**
-     * Acquires the right child to given parameter
-     *
-     * @param currentNodeIndex
-     * @return int index of the right child
-     */
-    private int RightChild(int currentNodeIndex) {
-        return currentNodeIndex * 2 + 1;
-    }
-
-    /**
-     * insets an element to the heap and sorts it.
-     *
-     * @param Element that need to be inserted
-     */
-    @Override
-    public void insert(Element e) {
-        length++;
-        heap[length] = e; //inserts the element
-        heapIncreaseKey(length, e); // moves the knot closer to the leaf nodes
-    }
-
-    /**
-     * compares root element with children
-     *
-     * @param i root-index
-     * @param e specified knot
-     */
-    private void heapIncreaseKey(int i, Element e) {
-        if (e.getKey() > heap[i].getKey()) { // checks if key is bigger then current key
-            return;
+        /**
+         * Constructor
+         *
+         * @param maxElms maximum number of element there can be in the heap.
+         */
+        public PQHeap(int maxElms) {
+            heapSize = maxElms; //caps the size of the heap
+            heap = new Element[maxElms]; //initializes the heap
         }
-        //compares keys
-        heap[i] = e;
-        while (i > 1 && heap[Parent(i)].getKey() > heap[i].getKey()) {
-            exchange(i, Parent(i)); // if key is bigger exchange
-            i = Parent(i); // set new parrent knot
+
+        /**
+         * removes the smallest element in the heap and returns it
+         *
+         * @return Element
+         */
+        @Override
+        public Element extractMin() {
+            
+            if (length <= 0) {
+                return null;
+            }
+            
+            Element min = heap[1]; //set min equal to the smallest element in the heap
+            heap[1] = heap[length]; //takes the biggest element and set it as the root
+            length = length - 1; //reduces the length by 1, due to the removal of the smallest element
+            minHeapify(1); //validates the structure of the heap
+            return min;
         }
-    }
 
-    /**
-     * swaps 2 elements.
-     *
-     * @param rootIndex location of the first element.
-     * @param smallestIndex location of the second element.
-     */
-    private void exchange(int rootIndex, int smallestIndex) {
-        //saves root outside array
-        Element tempRoot = heap[rootIndex];
-        //set root to the smallest
-        heap[rootIndex] = heap[smallestIndex];
-        //changes the original smallest to the root
-        heap[smallestIndex] = tempRoot;
-    }
-
-    /**
-     * compares sub-trees and returns the smallest element to a recursive loop
-     * until the array is sorted
-     *
-     * @param i root-index
-     */
-    public void minHeapify(int i) {
-        int smallest;
-        int l = LeftChild(i);
-        int r = RightChild(i);
-        //compares root and leftchild elements
-        if (l <= length && heap[l].getKey() < heap[i].getKey()) {
-            smallest = l;
-        } else {
-            smallest = i;
+        /**
+         * Returns the index of the parent to given parameter
+         *
+         * @param currentNodeIndex
+         * @return int index of the parent node
+         */
+        private int Parent(int currentNodeIndex) {
+            int value = (int) floor(currentNodeIndex / 2);
+            return value;
         }
-        //compares smallest element with right child
-        if (r <= length && heap[r].getKey() < heap[smallest].getKey()) {
-            smallest = r;
+
+        /**
+         * Acquires left child to given parameter
+         *
+         * @param currentNodeIndex
+         * @return int index of the left child
+         */
+        private int LeftChild(int currentNodeIndex) {
+            return (currentNodeIndex * 2);
         }
-        
-        // if root is not the smallest element exchange root with the smallest and continues the recursive loop
-        if (smallest != i) {
-            exchange(i, smallest);
-            minHeapify(smallest);
+
+        /**
+         * Acquires the right child to given parameter
+         *
+         * @param currentNodeIndex
+         * @return int index of the right child
+         */
+        private int RightChild(int currentNodeIndex) {
+            return currentNodeIndex * 2 + 1;
         }
-    }
 
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
+        /**
+         * insets an element to the heap and sorts it.
+         *
+         * @param Element that need to be inserted
+         */
+        @Override
+        public void insert(Element e) {
+            length++;
+            heap[length] = e; //inserts the element
+            heapIncreaseKey(length, e); // moves the knot closer to the leaf nodes
+        }
 
-        for (Element e : heap) {
-            if (e != null) {
+        /**
+         * compares root element with children
+         *
+         * @param i root-index
+         * @param e specified knot
+         */
+        private void heapIncreaseKey(int i, Element e) {
+            if (e.getKey() > heap[i].getKey()) { // checks if key is bigger then current key
+                return;
+            }
+            //compares keys
+            heap[i] = e;
+            while (i > 1 && heap[Parent(i)].getKey() > heap[i].getKey()) {
+                exchange(i, Parent(i)); // if key is bigger exchange
+                i = Parent(i); // set new parrent knot
+            }
+        }
 
-                sb.append(e.getKey());
-                sb.append(". ");
-                sb.append("[");
-                sb.append(e.getData());
-                sb.append("]");
-                sb.append("\n");
+        /**
+         * swaps 2 elements.
+         *
+         * @param rootIndex location of the first element.
+         * @param smallestIndex location of the second element.
+         */
+        private void exchange(int rootIndex, int smallestIndex) {
+            //saves root outside array
+            Element tempRoot = heap[rootIndex];
+            //set root to the smallest
+            heap[rootIndex] = heap[smallestIndex];
+            //changes the original smallest to the root
+            heap[smallestIndex] = tempRoot;
+        }
+
+        /**
+         * compares sub-trees and returns the smallest element to a recursive
+         * loop until the array is sorted
+         *
+         * @param i root-index
+         */
+        public void minHeapify(int i) {
+            int smallest;
+            int l = LeftChild(i);
+            int r = RightChild(i);
+            //compares root and leftchild elements
+            if (l <= length && heap[l].getKey() < heap[i].getKey()) {
+                smallest = l;
+            } else {
+                smallest = i;
+            }
+            //compares smallest element with right child
+            if (r <= length && heap[r].getKey() < heap[smallest].getKey()) {
+                smallest = r;
             }
 
+            // if root is not the smallest element exchange root with the smallest and continues the recursive loop
+            if (smallest != i) {
+                exchange(i, smallest);
+                minHeapify(smallest);
+            }
         }
-
-        return sb.toString();
-    }
 
         @Override
-        public int getHeapSize() {
-            return heapSize;
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+
+            for (Element e : heap) {
+                if (e != null) {
+
+                    sb.append(e.getKey());
+                    sb.append(". ");
+                    sb.append("[");
+                    sb.append(e.getData());
+                    sb.append("]");
+                    sb.append("\n");
+                }
+
+            }
+
+            return sb.toString();
         }
 
-}
+        @Override
+        public int getSize() {
+            return length;
+        }
+
+    }
 
     public class Element {
 
