@@ -26,11 +26,14 @@ import java.util.logging.Logger;
  * @author Administrator
  */
 public class Encode {
+    
+    private static String codeName;
 
     //TEST
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
     private int SIZE = 255;
+    String[] codenameArray;
 
     private static final boolean TESTMODE = false; //change to false for less sout information
 
@@ -169,6 +172,7 @@ public class Encode {
         if (root != null) {
             treeWalk(root.getLeftChield());
 
+        
             if (TESTMODE) {
                 System.out.println(root.freq);
             } else {
@@ -176,9 +180,11 @@ public class Encode {
                     System.out.println("    " + root.value + " : " + root.freq);
                 }
             }
-            
+                 
             treeWalk(root.getRightChield());
+            
         }
+        
     }
 
     private void compress(String[] args) throws FileNotFoundException, IOException {
@@ -356,6 +362,7 @@ public class Encode {
          */
         @Override
         public boolean search(int k) {
+            
             Node r = treeSearch(k, root);
             return r != null;
         }
@@ -367,20 +374,60 @@ public class Encode {
          * @param parent node that will be seached below
          * @return Node
          */
-        private Node treeSearch(int key, Node parent) {
-            if (parent == null || parent.getKey() == key) {
-                return parent;
+        public Node treeSearch(int key, Node parent) {
+            
+            
+            
+            StringBuilder sb = new StringBuilder(250);        
+            if(parent == null){
+                for (int i = 0; i < sb.length(); i++) {
+                    sb.deleteCharAt(i);
+                }
             }
-            if (key < parent.key) {
-                return treeSearch(key, parent.leftChield);
-            } else {
-                return treeSearch(key, parent.rightChield);
+           
+            if (parent.getKey() == key) {  
+                
+                System.out.println("Parent is zero or equal its key : " + key);
+           
+                Node n =  parent;
+                
             }
+            if (key < parent.key ) {   
+                sb.append("0");
+                System.out.println("Added " + sb.toString() + " to the code ");
+                Node n =treeSearch(key, parent.leftChield);
+                
+            } else {    
+                sb.append("1");
+                   System.out.println("Added " + sb.toString() + " to the code ");
+                   
+                Node n = treeSearch(key, parent.rightChield);
+            }
+            codeName = sb.toString();
+            for (int i = 0; i < sb.length(); i++) {
+                sb.deleteCharAt(i);
+            }
+            
+            return parent;
+          
         }
 
         /**
          * a node in the BinaryTree
          */
+    }
+    
+    public void generateCodenames(){
+            //alex find lige rootNode + binTree
+            codenameArray = new String[256];
+         Node rootNode = new Node(0);
+         DictBinTree tree = new DictBinTree();
+        for (int i = 0; i < 255; i++) {
+          
+          tree.treeSearch(i, rootNode);
+          codenameArray[i] = codeName;
+          
+        }
     }
 
     public class Node {
