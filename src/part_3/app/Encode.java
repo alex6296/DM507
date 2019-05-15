@@ -105,19 +105,20 @@ public class Encode {
         int n = C.getSize(); //Retrieves the size of the PQ object C
         PQ Q = C;
 
-        for (int i = 0; i < n - 1; i++) { //Runs through 
+        for (int i = 0; i < n - 1; i++) { //Runs through C
 
             //new node
             int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
 
-            //tries to add children
+            //Adds children to the Knot z
             Knot y, x;
             try {
                 x = Q.extractMin().getData();
                 z.setLeftChield(x);  //try to add leftChield
                 z.freq += x.freq;
                 if (x.freq > 0) {
+                    //adds the frequency of x to z
                     z.value += x.value;
 
                     if (TESTMODE) {
@@ -132,7 +133,7 @@ public class Encode {
 
             try {
                 y = Q.extractMin().getData(); //gets the root data
-                z.setRightChield(y);  //tries to add a leftChield
+                z.setRightChield(y);  //adds a leftChild
                 z.freq += y.freq; //adds the frequency to its parent
                 if (y.freq > 0) {
                     z.value += y.value; //adds the frequency to its parent 
@@ -235,7 +236,7 @@ public class Encode {
             this.value = value;
             this.freq = freq;
         }
-
+        //getter and setter methods
         public boolean hasLeftChield() {
             return leftChield != null;
         }
