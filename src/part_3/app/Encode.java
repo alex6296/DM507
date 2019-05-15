@@ -27,18 +27,13 @@ import java.util.logging.Logger;
  */
 public class Encode {
 
-    private static String codeName;
-
     //TEST
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
+    private static final boolean TESTMODE = true; //change to false for less sout information
+
+    //var
     private int SIZE = 255;
-    String[] codenameArray;
-
-    private static final boolean TESTMODE = false; //change to false for less sout information
-
-    //VARS
-    private final Map<Integer, Integer> codeMapping = new HashMap<>();
 
     public static void main(String[] args) {
         Encode e = new Encode();
@@ -129,6 +124,13 @@ public class Encode {
                 z.freq += x.freq;
                 if (x.freq > 0) {
                     z.value += x.value;
+
+                    if (TESTMODE) {
+                        if (x.freq > 0) {
+                            System.out.println("x.value = " + x.value);
+                        }
+                    }
+
                 }
             } catch (NullPointerException e) {
             }
@@ -140,12 +142,20 @@ public class Encode {
                 if (y.freq > 0) {
                     z.value += y.value;
                 }
+
+                if (TESTMODE) {
+                    if (y.freq > 0) {
+                        System.out.println("y.value = " + y.value);
+                    }
+                }
+
             } catch (NullPointerException e) {
             }
 
             //insert combined knot to Q
             Element e = new Element(z.freq, z);
             Q.insert(e);
+
         }
 
         Knot r = Q.extractMin().data;
@@ -161,52 +171,43 @@ public class Encode {
     private StringBuilder sb = new StringBuilder(255);
     private String[] encodeList = new String[255];
 
-    public Knot treeSearch(int targetValue, Knot root) {;
-
+    public void treeSearch(int targetValue, Knot root) {
         Knot result;
+        if (root == null) {
+            return;
+        }
+
+        sb.append("0"); //add 0 to code
+        treeSearch(targetValue, root.leftChield);
 
         //if parrent is a leaf node       
         if (!root.hasLeftChield() && !root.hasRightChield()) {
+            //all bytes used 
+            if (root.freq > 0) {
+                //is it the target leaf node
+                if (root.value == targetValue) {
 
-            String finalCode = sb.toString(); //get converted code
-            if (encodeList[root.value] == null) {
-                encodeList[root.value] = finalCode; // save to code list
-                System.out.println("   "+root.value + " : " + finalCode);
+                    System.out.println("root value = " + root.value);
+                    String finalCode = sb.toString(); //get converted code
+                    encodeList[root.value] = finalCode; // save to code list
+                    System.out.println("   " + root.value + " : " + finalCode);
+                    sb = new StringBuilder(250); //clear string builder
+                    return;
+                }
+                sb.deleteCharAt(sb.length() - 1);
             }
-            sb = new StringBuilder(250); //clear string builder
-            return null; //continue recursive calls
+
         }
 
-        //if taget is small get left chield
-        if (targetValue < root.freq) {
-
-            sb.append("0"); //add 0 to code
-            if (TESTMODE) {
-                System.out.println("Added " + sb.toString() + " to the code ");
-            }
-
-            result = treeSearch(targetValue, root.leftChield);
-
-        } else { //if taget is greater get right chield
-            sb.append("1");// add 1 to code
-            if (TESTMODE) {
-                System.out.println("Added " + sb.toString() + " to the code ");
-            }
-
-            result = treeSearch(targetValue, root.rightChield);
-        }
-
-        return result;
+        //if taget is greater get right chield
+        sb.append("1");// add 1 to code
+        treeSearch(targetValue, root.rightChield);
 
     }
 
     public void generateCodenames(Knot root) {
-        //alex find lige rootNode + binTree
-        codenameArray = new String[256];
-
         for (int i = 0; i < 255; i++) {
             treeSearch(i, root);
-            codenameArray[i] = codeName;
         }
     }
 
