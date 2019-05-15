@@ -35,7 +35,6 @@ public class Decode {
         try {
             e.run(args);
         } catch (Exception ex) {
-            Logger.getLogger(Decode.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -58,16 +57,16 @@ public class Decode {
 
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
-        Decode.PQ Q = new Decode.PQHeap(SIZE + 10);
+        PQ Q = new PQHeap(SIZE + 10);
 
         //insert all bytes in PQ
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
-            Decode.Knot k = new Decode.Knot(charValue, inputArray[charValue]);
-            Decode.Element e = new Decode.Element(k.freq, k);
+            Knot k = new Knot(charValue, inputArray[charValue]);
+            Element e = new Element(k.freq, k);
             Q.insert(e);
         }
 
-        Decode.Knot root = huffmanify(Q); //OPGAVE 2
+        Knot root = huffmanify(Q); //OPGAVE 2
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
         
@@ -96,8 +95,7 @@ public class Decode {
 
         return result;
     }
-
-    private Knot huffmanify(PQ C) {
+ private Knot huffmanify(PQ C) {
         int n = C.getSize();
         PQ Q = C;
 
@@ -115,6 +113,13 @@ public class Decode {
                 z.freq += x.freq;
                 if (x.freq > 0) {
                     z.value += x.value;
+
+                    if (TESTMODE) {
+                        if (x.freq > 0) {
+                            System.out.println("x.value = " + x.value);
+                        }
+                    }
+
                 }
             } catch (NullPointerException e) {
             }
@@ -126,12 +131,20 @@ public class Decode {
                 if (y.freq > 0) {
                     z.value += y.value;
                 }
+
+                if (TESTMODE) {
+                    if (y.freq > 0) {
+                        System.out.println("y.value = " + y.value);
+                    }
+                }
+
             } catch (NullPointerException e) {
             }
 
             //insert combined knot to Q
             Element e = new Element(z.freq, z);
             Q.insert(e);
+
         }
 
         Knot r = Q.extractMin().data;
@@ -147,6 +160,8 @@ public class Decode {
     private void deCode(String[] args) throws FileNotFoundException, IOException {
     //TODO IF THIS IS SOLVED IN THIS FILE PORT TO THE OTHER
     }
+
+// DICT 
     public class Knot {
 
         public int value, freq;
@@ -179,176 +194,6 @@ public class Decode {
         }
 
         public void setRightChield(Knot rightChield) {
-            this.rightChield = rightChield;
-        }
-
-    }
-
-// DICT 
-    public interface Dict {
-
-        public void insert(int k);
-
-        public int[] orderedTraversal();
-
-        public boolean search(int k);
-    }
-
-    private class DictBinTree implements Dict {
-
-        private Node root; //header object
-        private int length = 0; //number of nodes in tree
-
-        int[] result; //return value for orderedTraversal
-        private int count; //amoubnt of nodes travered in orderedTraversal
-
-        /**
-         * non-args constructor
-         */
-        public DictBinTree() {
-        }
-
-        /**
-         * inserts an element in the binary tree
-         *
-         * @param k the key that is used to sort the element
-         */
-        @Override
-        public void insert(int k) {
-
-            length++;
-            Node z = new Node(k); //transforms the given parameter to a node object
-
-            Node x = root; //pointer
-            Node y = null; //trailing pointer 
-
-            //recursive loop looking for an null chield node
-            while (x != null) {
-                y = x;
-                if (z.key < x.key) {
-                    x = x.getLeftChield();
-                } else {
-                    x = x.getRightChield();
-                }
-            }
-            //z.p = y; //sets the parrent of the new value to y
-
-            //inserts new node as chield to the leaf node found by the recursive loop
-            if (y == null) {
-                root = z; //treee was empty   
-            } else if (z.getKey() < y.getKey()) {
-                y.setLeftChield(z);
-            } else {
-                y.setRightChield(z);
-            }
-
-        }
-
-        /**
-         * Gives an full list of itemes contained wrapper method for
-         * InorderTreeWalk
-         *
-         * @return int[] of sorted list
-         */
-        @Override
-        public int[] orderedTraversal() {
-            result = new int[length];
-            count = 0;
-            inorderTreeWalk(root);
-            return result;
-        }
-
-        /**
-         * treverses a sub-tree and makes recursive call to the chieldren of the
-         * subtree
-         *
-         * @param m sub-tree root
-         */
-        private void inorderTreeWalk(Node n) {
-            if (n != null) {
-                inorderTreeWalk(n.getLeftChield());
-
-                result[count] = n.getKey();
-                count++;
-
-                inorderTreeWalk(n.getRightChield());
-            }
-        }
-
-        /**
-         * look if the tree contaions a given value
-         *
-         * @param k key value
-         * @return boolean
-         */
-        @Override
-        public boolean search(int k) {
-            Node r = treeSearch(k, root);
-            return r != null;
-        }
-
-        /**
-         * Looks for a given key in all subtrees of a Node
-         *
-         * @param key that need to be fould
-         * @param parent node that will be seached below
-         * @return Node
-         */
-        private Node treeSearch(int key, Node parent) {
-            if (parent == null || parent.getKey() == key) {
-                return parent;
-            }
-            if (key < parent.key) {
-                return treeSearch(key, parent.leftChield);
-            } else {
-                return treeSearch(key, parent.rightChield);
-            }
-        }
-
-        /**
-         * a node in the BinaryTree
-         */
-    }
-
-    public class Node {
-
-        private int key;
-        private Node leftChield = null;
-        private Node rightChield = null;
-
-        public Node(int key) {
-            this.key = key;
-        }
-
-        public int getKey() {
-            return key;
-        }
-
-        public void setKey(int key) {
-            this.key = key;
-        }
-
-        public boolean hasLeftChield() {
-            return leftChield != null;
-        }
-
-        public Node getLeftChield() {
-            return leftChield;
-        }
-
-        public void setLeftChield(Node leftChield) {
-            this.leftChield = leftChield;
-        }
-
-        public boolean hasRightChield() {
-            return rightChield != null;
-        }
-
-        public Node getRightChield() {
-            return rightChield;
-        }
-
-        public void setRightChield(Node rightChield) {
             this.rightChield = rightChield;
         }
 

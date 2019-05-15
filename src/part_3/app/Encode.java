@@ -10,8 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.Math.floor;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,11 +17,6 @@ import java.util.logging.Logger;
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
- */
-/**
- * 1
- *
- * @author Administrator
  */
 public class Encode {
 
@@ -34,6 +27,8 @@ public class Encode {
 
     //var
     private int SIZE = 255;
+    private StringBuilder sb = new StringBuilder(255);
+    private String[] encodeList = new String[255];
 
     public static void main(String[] args) {
         Encode e = new Encode();
@@ -76,7 +71,7 @@ public class Encode {
 
         System.out.println("--- tablefy ---");
         System.out.println("value : code");
-        generateCodenames(root); // OPGAVE 3   
+        treeSearch(root);
         System.out.println("--- compress ---");
         compress(args/*args[0]*/); //OPGAVE 4
     }
@@ -164,9 +159,6 @@ public class Encode {
 
         return r;
     }
-    //var 
-    private StringBuilder sb = new StringBuilder(255);
-    private String[] encodeList = new String[255];
 
     public void treeSearch(Knot r) {
 
@@ -189,10 +181,6 @@ public class Encode {
         treeSearch(r.rightChield);
         sb.deleteCharAt(sb.length() - 1);
 
-    }
-
-    public void generateCodenames(Knot root) {
-        treeSearch(root);
     }
 
     private void compress(String[] args) throws FileNotFoundException, IOException {
