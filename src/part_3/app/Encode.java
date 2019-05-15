@@ -66,6 +66,7 @@ public class Encode {
             }
 
         }
+        
 
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
@@ -83,15 +84,12 @@ public class Encode {
         System.out.println("root.freq = " + root.freq);
 
         System.out.println("--- tablefy ---");
-        tablefy(root); //OPGAVE 3 
-        System.out.println("- dict -");
-        codeMapping.keySet().forEach((i) -> {
-            System.out.println(i + " : " + codeMapping.get(i));
-        });
+        generateCodenames(root); // OPGAVE 3   
         System.out.println("--- compress ---");
         compress(args/*args[0]*/); //OPGAVE 4
     }
 
+     
     private int[] getInput(String[] args) throws Exception {
         int[] result = new int[SIZE];
 
@@ -160,32 +158,54 @@ public class Encode {
 
         return r;
     }
-
-    private void tablefy(Knot hufmanTree) {
-        System.out.println("- value : freq -");
-        treeWalk(hufmanTree);
-    }
-
-    private void treeWalk(Knot root) {
-        //TODO figure out why an elements appears twise
-        //TODO implement the huffman 0 and 1 namings as byte translations
-        if (root != null) {
-            treeWalk(root.getLeftChield());
-
-        
-            if (TESTMODE) {
-                System.out.println(root.freq);
-            } else {
-                if (root.freq > 0) {
-                    System.out.println("    " + root.value + " : " + root.freq);
+    
+       public Knot treeSearch(int key, Knot parent) {
+            
+            
+            
+            StringBuilder sb = new StringBuilder(250);        
+            if(parent == null){
+                for (int i = 0; i < sb.length(); i++) {
+                    sb.deleteCharAt(i);
                 }
             }
-                 
-            treeWalk(root.getRightChield());
+           
+            if (parent.freq == key) {  
+                
+                System.out.println("Parent is zero or equal its key : " + key);
+           
+                Knot n =  parent;
+                
+            }
+            if (key < parent.freq ) {   
+                sb.append("0");
+                System.out.println("Added " + sb.toString() + " to the code ");
+                Knot n =treeSearch(key, parent.leftChield);
+                
+            } else {    
+                sb.append("1");
+                   System.out.println("Added " + sb.toString() + " to the code ");
+                   
+                Knot n = treeSearch(key, parent.rightChield);
+            }
+            codeName = sb.toString();
+            for (int i = 0; i < sb.length(); i++) {
+                sb.deleteCharAt(i);
+            }
             
+            return parent;
+          
         }
-        
+     public void generateCodenames(Knot root){
+            //alex find lige rootNode + binTree
+            codenameArray = new String[256];
+       
+          for (int i = 0; i < 255; i++) {    
+             treeSearch(i, root);
+             codenameArray[i] = codeName;       
+        }
     }
+
 
     private void compress(String[] args) throws FileNotFoundException, IOException {
         //TEST DICT
@@ -264,171 +284,9 @@ public class Encode {
     }
 
 // DICT 
-    public interface Dict {
-
-        public void insert(int k);
-
-        public int[] orderedTraversal();
-
-        public boolean search(int k);
-    }
-
-    private class DictBinTree implements Dict {
-
-        private Node root; //header object
-        private int length = 0; //number of nodes in tree
-
-        int[] result; //return value for orderedTraversal
-        private int count; //amoubnt of nodes travered in orderedTraversal
-
-        /**
-         * non-args constructor
-         */
-        public DictBinTree() {
-        }
-
-        /**
-         * inserts an element in the binary tree
-         *
-         * @param k the key that is used to sort the element
-         */
-        @Override
-        public void insert(int k) {
-
-            length++;
-            Node z = new Node(k); //transforms the given parameter to a node object
-
-            Node x = root; //pointer
-            Node y = null; //trailing pointer 
-
-            //recursive loop looking for an null chield node
-            while (x != null) {
-                y = x;
-                if (z.key < x.key) {
-                    x = x.getLeftChield();
-                } else {
-                    x = x.getRightChield();
-                }
-            }
-            //z.p = y; //sets the parrent of the new value to y
-
-            //inserts new node as chield to the leaf node found by the recursive loop
-            if (y == null) {
-                root = z; //treee was empty   
-            } else if (z.getKey() < y.getKey()) {
-                y.setLeftChield(z);
-            } else {
-                y.setRightChield(z);
-            }
-
-        }
-
-        /**
-         * Gives an full list of itemes contained wrapper method for
-         * InorderTreeWalk
-         *
-         * @return int[] of sorted list
-         */
-        @Override
-        public int[] orderedTraversal() {
-            result = new int[length];
-            count = 0;
-            inorderTreeWalk(root);
-            return result;
-        }
-
-        /**
-         * treverses a sub-tree and makes recursive call to the chieldren of the
-         * subtree
-         *
-         * @param m sub-tree root
-         */
-        private void inorderTreeWalk(Node n) {
-            if (n != null) {
-                inorderTreeWalk(n.getLeftChield());
-
-                result[count] = n.getKey();
-                count++;
-
-                inorderTreeWalk(n.getRightChield());
-            }
-        }
-
-        /**
-         * look if the tree contaions a given value
-         *
-         * @param k key value
-         * @return boolean
-         */
-        @Override
-        public boolean search(int k) {
-            
-            Node r = treeSearch(k, root);
-            return r != null;
-        }
-
-        /**
-         * Looks for a given key in all subtrees of a Node
-         *
-         * @param key that need to be fould
-         * @param parent node that will be seached below
-         * @return Node
-         */
-        public Node treeSearch(int key, Node parent) {
-            
-            
-            
-            StringBuilder sb = new StringBuilder(250);        
-            if(parent == null){
-                for (int i = 0; i < sb.length(); i++) {
-                    sb.deleteCharAt(i);
-                }
-            }
-           
-            if (parent.getKey() == key) {  
-                
-                System.out.println("Parent is zero or equal its key : " + key);
-           
-                Node n =  parent;
-                
-            }
-            if (key < parent.key ) {   
-                sb.append("0");
-                System.out.println("Added " + sb.toString() + " to the code ");
-                Node n =treeSearch(key, parent.leftChield);
-                
-            } else {    
-                sb.append("1");
-                   System.out.println("Added " + sb.toString() + " to the code ");
-                   
-                Node n = treeSearch(key, parent.rightChield);
-            }
-            codeName = sb.toString();
-            for (int i = 0; i < sb.length(); i++) {
-                sb.deleteCharAt(i);
-            }
-            
-            return parent;
-          
-        }
-
-        /**
-         * a node in the BinaryTree
-         */
-    }
     
-    public void generateCodenames(){
-            //alex find lige rootNode + binTree
-            codenameArray = new String[256];
-         Node rootNode = new Node(0);
-         DictBinTree tree = new DictBinTree();
-        for (int i = 0; i < 255; i++) {
-          
-          tree.treeSearch(i, rootNode);
-          codenameArray[i] = codeName;
-          
-        }
-    }
+    
+  
 
     public class Node {
 
