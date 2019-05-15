@@ -26,11 +26,11 @@ public class Decode {
     //TEST
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
-    private int SIZE = 256;
+    private final int SIZE = 256;
     private StringBuilder sb = new StringBuilder(256);
     private String[] encodeList = new String[256];
 
-    private static final boolean TESTMODE = false; //change to false for less sout information
+    private static final boolean TESTMODE = true; //change to false for less sout information
 
     public static void main(String[] args) {
         Decode e = new Decode();
@@ -38,6 +38,7 @@ public class Decode {
         try {
             e.run(args);
         } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -55,9 +56,9 @@ public class Decode {
                 }
             }
         }
-        System.out.println("--- huffmanify ---");
+       System.out.println("--- huffmanify ---");
         //transform array to PQHeap
-        PQ Q = new PQHeap(SIZE + 10);
+        PQ Q = new PQHeap(SIZE);
 
         //insert all bytes in PQ
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
@@ -80,22 +81,14 @@ public class Decode {
     private int[] getInput(String[] args) throws Exception {
         int[] result = new int[SIZE];
 
-        //set all elements freq to 0
-        for (int i = 0; i < result.length; i++) {
-            result[i] = 0;
-        }
-
         // Open input and output byte streams to/from files.
-        FileInputStream inFile = new FileInputStream(FILEINPUT/*args[0]*/);
-        BufferedInputStream reader = new BufferedInputStream(inFile);
+        FileInputStream inFile = new FileInputStream(FILEOUTPUT/*args[0]*/);
+        BitInputStream reader = new BitInputStream(inFile);
 
         //find frequencies [index = charNumber, value = freq.]
-        int i = reader.read();
-        while (i != -1) {
-            result[i]++;
-            i = reader.read();
+        for (int i = 0; i < SIZE; i++) {
+            result[i] = reader.readInt();
         }
-
         return result;
     }
 
@@ -248,8 +241,8 @@ public class Decode {
          * @param maxElms maximum number of element there can be in the heap.
          */
         public PQHeap(int maxElms) {
-            heapSize = maxElms; //caps the size of the heap
-            heap = new Element[maxElms]; //initializes the heap
+            heapSize = maxElms+1; //caps the size of the heap
+            heap = new Element[maxElms+1]; //initializes the heap
         }
 
         /**

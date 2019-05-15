@@ -5,6 +5,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +25,7 @@ public class Encode {
     
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
-    private static final boolean TESTMODE = false; //change to false for less sout information
+    private static final boolean TESTMODE = true; //change to false for less sout information
 
     //var
     private int SIZE = 256;
@@ -57,7 +58,7 @@ public class Encode {
         }
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
-        PQ Q = new PQHeap(SIZE + 10);
+        PQ Q = new PQHeap(SIZE);
 
         //insert all bytes in PQ
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
@@ -190,34 +191,28 @@ public class Encode {
         // Open input and output byte streams to/from files.
         //IN
         String codeword;
-        PQ Q = new PQHeap(SIZE + 10);
+        PQ Q = new PQHeap(SIZE);
         
         FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
         BufferedInputStream reader = new BufferedInputStream(inFile);
-        //OUT
-        BufferedWriter out = new BufferedWriter(new FileWriter(FILEOUTPUT));
+        BitOutputStream out = new BitOutputStream(new FileOutputStream(FILEOUTPUT));
         
         //adds freq as meta-data
         int[] freqList = getInput(args);
         for (int i = 0; i < freqList.length; i++) {
             int o = freqList[i];
-           out.write(o); 
+           out.writeInt(o); 
         }
-        System.out.println(freqList.length);
-        System.out.println("added freqList");
         
-//        //add file
-//        int i = reader.read();
-//        while (i != -1) {
-//            
-//            codeword = encodeList[i];
-//            out.write(codeword);
-//            i = reader.read();
-//        }
-//        System.out.println("added file");
-//        
-//        
-
+        //add file
+        int i = reader.read();
+        while (i != -1) {
+            
+            codeword = encodeList[i];
+            out.writeInt(Integer.parseInt(codeword));
+            i = reader.read();
+        }
+        
         //  close
         reader.close();
         out.close();
@@ -283,8 +278,8 @@ public class Encode {
          * @param maxElms maximum number of element there can be in the heap.
          */
         public PQHeap(int maxElms) {
-            heapSize = maxElms; //caps the size of the heap
-            heap = new Element[maxElms]; //initializes the heap
+            heapSize = maxElms+1; //caps the size of the heap
+            heap = new Element[maxElms+1]; //initializes the heap
         }
 
         /**
