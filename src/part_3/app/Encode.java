@@ -30,7 +30,7 @@ public class Encode {
     //TEST
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
-    private static final boolean TESTMODE = true; //change to false for less sout information
+    private static final boolean TESTMODE = false; //change to false for less sout information
 
     //var
     private int SIZE = 255;
@@ -171,44 +171,31 @@ public class Encode {
     private StringBuilder sb = new StringBuilder(255);
     private String[] encodeList = new String[255];
 
-    public void treeSearch(int targetValue, Knot root) {
-        Knot result;
-        if (root == null) {
+    public void treeSearch(Knot r) {
+
+        if (r == null) {
             return;
         }
 
-        sb.append("0"); //add 0 to code
-        treeSearch(targetValue, root.leftChield);
+        sb.append('0');
+        treeSearch(r.leftChield);
+        sb.deleteCharAt(sb.length() - 1);
 
-        //if parrent is a leaf node       
-        if (!root.hasLeftChield() && !root.hasRightChield()) {
-            //all bytes used 
-            if (root.freq > 0) {
-                //is it the target leaf node
-                if (root.value == targetValue) {
-
-                    System.out.println("root value = " + root.value);
-                    String finalCode = sb.toString(); //get converted code
-                    encodeList[root.value] = finalCode; // save to code list
-                    System.out.println("   " + root.value + " : " + finalCode);
-                    sb = new StringBuilder(250); //clear string builder
-                    return;
-                }
-                sb.deleteCharAt(sb.length() - 1);
-            }
-
+        //check for 
+        if (!r.hasLeftChield() && !r.hasRightChield() && r.freq > 0) {
+            String finalCode = sb.toString(); //get converted code
+            encodeList[r.value] = finalCode; // save to code list
+            System.out.println("   " + r.value + " : " + finalCode);
         }
 
-        //if taget is greater get right chield
-        sb.append("1");// add 1 to code
-        treeSearch(targetValue, root.rightChield);
+        sb.append('1');
+        treeSearch(r.rightChield);
+        sb.deleteCharAt(sb.length() - 1);
 
     }
 
     public void generateCodenames(Knot root) {
-        for (int i = 0; i < 255; i++) {
-            treeSearch(i, root);
-        }
+        treeSearch(root);
     }
 
     private void compress(String[] args) throws FileNotFoundException, IOException {
