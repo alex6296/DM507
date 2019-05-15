@@ -26,9 +26,9 @@ public class Encode {
     private static final boolean TESTMODE = false; //change to false for less sout information
 
     //var
-    private int SIZE = 255;
-    private StringBuilder sb = new StringBuilder(255);
-    private String[] encodeList = new String[255];
+    private int SIZE = 256;
+    private StringBuilder sb = new StringBuilder(256);
+    private String[] encodeList = new String[256];
 
     public static void main(String[] args) {
         Encode e = new Encode();
@@ -69,7 +69,7 @@ public class Encode {
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
 
-        System.out.println("--- tablefy ---");
+        System.out.println("--- treeSearch ---");
         System.out.println("value : code");
         treeSearch(root);
         System.out.println("--- compress ---");

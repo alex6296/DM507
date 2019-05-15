@@ -17,7 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- *fefgege
+ * fefgege
+ *
  * @author Lenovo
  */
 public class Decode {
@@ -25,7 +26,9 @@ public class Decode {
     //TEST
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
-    private int SIZE = 255;
+    private int SIZE = 256;
+    private StringBuilder sb = new StringBuilder(256);
+    private String[] encodeList = new String[256];
 
     private static final boolean TESTMODE = false; //change to false for less sout information
 
@@ -39,8 +42,7 @@ public class Decode {
     }
 
     public void run(String[] args) throws Exception {
-
-        int[] inputArray = getInput(args/*args[0]*/); // OPGAVE 1
+        int[] inputArray = getInput(args/*args[0]*/); // OPGAVE
         System.out.println("--input ---");
         System.out.println("index : frequency");
         for (int i = 0; i < inputArray.length; i++) {
@@ -52,9 +54,7 @@ public class Decode {
                     System.out.println("   " + i + " : " + inputArray[i]);
                 }
             }
-
         }
-
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
         PQ Q = new PQHeap(SIZE + 10);
@@ -69,9 +69,12 @@ public class Decode {
         Knot root = huffmanify(Q); //OPGAVE 2
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
-        
-        deCode(args); // part 3
 
+        System.out.println("--- treeSearch ---");
+        System.out.println("value : code");
+        treeSearch(root);
+        System.out.println("--- compress ---");
+        deCode(args/*args[0]*/); //OPGAVE 4
     }
 
     private int[] getInput(String[] args) throws Exception {
@@ -95,7 +98,8 @@ public class Decode {
 
         return result;
     }
- private Knot huffmanify(PQ C) {
+
+    private Knot huffmanify(PQ C) {
         int n = C.getSize();
         PQ Q = C;
 
@@ -157,8 +161,31 @@ public class Decode {
         return r;
     }
 
+    public void treeSearch(Knot r) {
+
+        if (r == null) {
+            return;
+        }
+
+        sb.append('0');
+        treeSearch(r.leftChield);
+        sb.deleteCharAt(sb.length() - 1);
+
+        //check for 
+        if (!r.hasLeftChield() && !r.hasRightChield() && r.freq > 0) {
+            String finalCode = sb.toString(); //get converted code
+            encodeList[r.value] = finalCode; // save to code list
+            System.out.println("   " + r.value + " : " + finalCode);
+        }
+
+        sb.append('1');
+        treeSearch(r.rightChield);
+        sb.deleteCharAt(sb.length() - 1);
+
+    }
+
     private void deCode(String[] args) throws FileNotFoundException, IOException {
-    //TODO IF THIS IS SOLVED IN THIS FILE PORT TO THE OTHER
+        //TODO IF THIS IS SOLVED IN THIS FILE PORT TO THE OTHER
     }
 
 // DICT 
