@@ -21,6 +21,7 @@ import java.util.logging.Logger;
 public class Encode {
 
     //TEST
+    
     private static final File FILEINPUT = new File("input.txt");
     private static final File FILEOUTPUT = new File("output.txt");
     private static final boolean TESTMODE = false; //change to false for less sout information
@@ -97,7 +98,7 @@ public class Encode {
 
         return result;
     }
-
+        
     private Knot huffmanify(PQ C) {
         int n = C.getSize();
         PQ Q = C;
@@ -183,25 +184,40 @@ public class Encode {
 
     }
 
-    private void compress(String[] args) throws FileNotFoundException, IOException {
+    private void compress(String[] args) throws FileNotFoundException, IOException, Exception {
 
         //TODO should used bitoutputstream
         // Open input and output byte streams to/from files.
         //IN
+        String codeword;
+        PQ Q = new PQHeap(SIZE + 10);
+        
         FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
         BufferedInputStream reader = new BufferedInputStream(inFile);
         //OUT
         BufferedWriter out = new BufferedWriter(new FileWriter(FILEOUTPUT));
-
-        //write output to file
-        int i = i = reader.read();
-        while (i != -1) {
-
-            //TODO figure out why outputs are squares
-            //write to file
-            //next
-            i = reader.read();
+        
+        //adds freq as meta-data
+        int[] freqList = getInput(args);
+        for (int i = 0; i < freqList.length; i++) {
+            int o = freqList[i];
+           out.write(o); 
         }
+        System.out.println(freqList.length);
+        System.out.println("added freqList");
+        
+//        //add file
+//        int i = reader.read();
+//        while (i != -1) {
+//            
+//            codeword = encodeList[i];
+//            out.write(codeword);
+//            i = reader.read();
+//        }
+//        System.out.println("added file");
+//        
+//        
+
         //  close
         reader.close();
         out.close();
