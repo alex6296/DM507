@@ -32,8 +32,6 @@ public class Decode {
     BitInputStream reader;
     FileOutputStream out;
 
-    private static final boolean TESTMODE = false; //change to false for less sout information
-
     public static void main(String[] args) {
         Decode e = new Decode();
 
@@ -48,19 +46,6 @@ public class Decode {
         reader = new BitInputStream(new FileInputStream(FILEINPUT));
         out = new FileOutputStream(FILEOUTPUT);
         int[] inputArray = getInput(args/*args[0]*/); // OPGAVE
-        System.out.println("--input ---");
-        System.out.println("index : frequency");
-        for (int i = 0; i < inputArray.length; i++) {
-
-            if (TESTMODE) {
-                System.out.println("   " + i + " : " + inputArray[i]);
-            } else {
-                if (inputArray[i] != 0) {
-                    System.out.println("   " + i + " : " + inputArray[i]);
-                }
-            }
-        }
-        System.out.println("--- huffmanify ---");
         //transform array to PQHeap
         PQ Q = new PQHeap(SIZE);
 
@@ -70,21 +55,14 @@ public class Decode {
             Element e = new Element(k.freq, k);
             Q.insert(e);
         }
-
         Knot root = huffmanify(Q); //OPGAVE 2
-        System.out.println("root.value = " + root.value);
-        System.out.println("root.freq = " + root.freq);
         totalBytes = root.freq; // max chars
-        System.out.println("--- treeSearch ---");
-        System.out.println("value : code");
         treeSearch(root);
-        System.out.println("--- compress ---");
         deCode(root); //OPGAVE 4
     }
 
     private int[] getInput(String[] args) throws Exception {
         int[] result = new int[SIZE];
-
         //find frequencies [index = charNumber, value = freq.]
         for (int i = 0; i < SIZE; i++) {
             result[i] = reader.readInt();
@@ -95,108 +73,65 @@ public class Decode {
     private Knot huffmanify(PQ C) {
         int n = C.getSize();
         PQ Q = C;
+        Knot y, x;
 
         for (int i = 0; i < n - 1; i++) {
-
             //new node
             int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
-
             //try to add Chielden
-            Knot y, x;
-            try {
-                x = Q.extractMin().getData();
-                z.setLeftChield(x);  //try to add leftChield
-                z.freq += x.freq;
-                if (x.freq > 0) {
-                    z.value += x.value;
 
-                    if (TESTMODE) {
-                        if (x.freq > 0) {
-                            System.out.println("x.value = " + x.value);
-                        }
-                    }
-
-                }
-            } catch (NullPointerException e) {
+            x = Q.extractMin().getData();
+            z.setLeftChield(x);  //try to add leftChield
+            z.freq += x.freq;
+            if (x.freq > 0) {
+                z.value += x.value;
             }
-
-            try {
-                y = Q.extractMin().getData();
-                z.setRightChield(y);  //try to add leftChield
-                z.freq += y.freq;
-                if (y.freq > 0) {
-                    z.value += y.value;
-                }
-
-                if (TESTMODE) {
-                    if (y.freq > 0) {
-                        System.out.println("y.value = " + y.value);
-                    }
-                }
-
-            } catch (NullPointerException e) {
+            y = Q.extractMin().getData();
+            z.setRightChield(y);  //try to add leftChield
+            z.freq += y.freq;
+            if (y.freq > 0) {
+                z.value += y.value;
             }
-
             //insert combined knot to Q
             Element e = new Element(z.freq, z);
             Q.insert(e);
-
         }
-
         Knot r = Q.extractMin().data;
-
-        if (TESTMODE) {
-            System.out.println("at end heap.size() = " + Q.getSize());
-
-        }
-
         return r;
     }
 
     public void treeSearch(Knot r) {
-
         if (r == null) {
             return;
         }
-
         sb.append('0');
         treeSearch(r.leftChield);
         sb.deleteCharAt(sb.length() - 1);
-
         //check for 
         if (!r.hasLeftChield() && !r.hasRightChield() && r.freq > 0) {
             String finalCode = sb.toString(); //get converted code
             encodeList[r.value] = finalCode; // save to code list
-            System.out.println("   " + r.value + " : " + finalCode);
         }
-
         sb.append('1');
         treeSearch(r.rightChield);
         sb.deleteCharAt(sb.length() - 1);
-
     }
 
     private void deCode(Knot rootr) throws FileNotFoundException, IOException, Exception {
-            //while less the total bytes
-            for (int i = 0; i < totalBytes; i++) {
-                Knot r = rootr;
-                
-                while(r.hasLeftChield() && r.hasRightChield()){
-                    
-                    int input = reader.readBit();
-                    System.out.println("input = "+input);
-                    if(input == 0){
-                        r = r.getLeftChield();
-                    }else{
-                        r = r.getRightChield();
-                    }
+        //while less the total bytes
+        for (int i = 0; i < totalBytes; i++) {
+            Knot r = rootr;
+            while (r.hasLeftChield() && r.hasRightChield()) {
+                int input = reader.readBit();
+                if (input == 0) {
+                    r = r.getLeftChield();
+                } else {
+                    r = r.getRightChield();
                 }
-                out.write(r.value);
-                System.out.println(r.value);
-                
             }
-        
+            out.write(r.value);
+        }
         //  close
         reader.close();
         out.close();
