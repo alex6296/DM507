@@ -1,10 +1,10 @@
-package part_3.app;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import part_3.app.Encode.BitInputStream;
-import part_3.app.Encode.BitOutputStream;
-
+//package part_3.app;
+//
+//import java.io.FileInputStream;
+//import java.io.FileOutputStream;
+//import part_3.app.Encode.BitInputStream;
+//import part_3.app.Encode.BitOutputStream;
+//
 // Test program to exercise BitInputStream and BitOutputStream. Run it
 // on some small text file (containing at least 4 bytes) by
 // 
@@ -24,8 +24,8 @@ import part_3.app.Encode.BitOutputStream;
 //        FileOutputStream outFile = new FileOutputStream(args[1]);
 //
 //        // Wrap the new bit streams around the input/output streams.
-//        BitInputStream in = new BitInputStream(inFile);
-//        BitOutputStream out = new BitOutputStream(outFile);
+////        BitInputStream in = new BitInputStream(inFile);
+////        BitOutputStream out = new BitOutputStream(outFile);
 //
 //        // First read a full int (i.e., four bytes) from input file
 //        // using the library method readInt().

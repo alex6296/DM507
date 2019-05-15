@@ -5,16 +5,14 @@
  */
 package part_3.app;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import static java.lang.Math.floor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * fefgege
@@ -24,13 +22,17 @@ import java.util.logging.Logger;
 public class Decode {
 
     //TEST
-    private static final File FILEINPUT = new File("input.txt");
-    private static final File FILEOUTPUT = new File("output.txt");
+    private static final File FILEINPUT = new File("output.txt");
+    private static final File FILEOUTPUT = new File("result.txt");
     private final int SIZE = 256;
     private StringBuilder sb = new StringBuilder(256);
     private String[] encodeList = new String[256];
+    private int totalBytes;
 
-    private static final boolean TESTMODE = true; //change to false for less sout information
+    BitInputStream reader;
+    FileOutputStream out;
+
+    private static final boolean TESTMODE = false; //change to false for less sout information
 
     public static void main(String[] args) {
         Decode e = new Decode();
@@ -43,6 +45,8 @@ public class Decode {
     }
 
     public void run(String[] args) throws Exception {
+        reader = new BitInputStream(new FileInputStream(FILEINPUT));
+        out = new FileOutputStream(FILEOUTPUT);
         int[] inputArray = getInput(args/*args[0]*/); // OPGAVE
         System.out.println("--input ---");
         System.out.println("index : frequency");
@@ -56,7 +60,7 @@ public class Decode {
                 }
             }
         }
-       System.out.println("--- huffmanify ---");
+        System.out.println("--- huffmanify ---");
         //transform array to PQHeap
         PQ Q = new PQHeap(SIZE);
 
@@ -70,20 +74,16 @@ public class Decode {
         Knot root = huffmanify(Q); //OPGAVE 2
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
-
+        totalBytes = root.freq; // max chars
         System.out.println("--- treeSearch ---");
         System.out.println("value : code");
         treeSearch(root);
         System.out.println("--- compress ---");
-        deCode(args/*args[0]*/); //OPGAVE 4
+        deCode(root); //OPGAVE 4
     }
 
     private int[] getInput(String[] args) throws Exception {
         int[] result = new int[SIZE];
-
-        // Open input and output byte streams to/from files.
-        FileInputStream inFile = new FileInputStream(FILEOUTPUT/*args[0]*/);
-        BitInputStream reader = new BitInputStream(inFile);
 
         //find frequencies [index = charNumber, value = freq.]
         for (int i = 0; i < SIZE; i++) {
@@ -177,8 +177,29 @@ public class Decode {
 
     }
 
-    private void deCode(String[] args) throws FileNotFoundException, IOException {
-        //TODO IF THIS IS SOLVED IN THIS FILE PORT TO THE OTHER
+    private void deCode(Knot rootr) throws FileNotFoundException, IOException, Exception {
+            //while less the total bytes
+            for (int i = 0; i < totalBytes; i++) {
+                Knot r = rootr;
+                
+                while(r.hasLeftChield() && r.hasRightChield()){
+                    
+                    int input = reader.readBit();
+                    System.out.println("input = "+input);
+                    if(input == 0){
+                        r = r.getLeftChield();
+                    }else{
+                        r = r.getRightChield();
+                    }
+                }
+                out.write(r.value);
+                System.out.println(r.value);
+                
+            }
+        
+        //  close
+        reader.close();
+        out.close();
     }
 
 // DICT 
@@ -241,8 +262,8 @@ public class Decode {
          * @param maxElms maximum number of element there can be in the heap.
          */
         public PQHeap(int maxElms) {
-            heapSize = maxElms+1; //caps the size of the heap
-            heap = new Element[maxElms+1]; //initializes the heap
+            heapSize = maxElms + 1; //caps the size of the heap
+            heap = new Element[maxElms + 1]; //initializes the heap
         }
 
         /**
