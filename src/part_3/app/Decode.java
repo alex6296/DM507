@@ -28,7 +28,7 @@ public class Decode {
     private static final File FILEOUTPUT = new File("output.txt"); //The output file we are using
     private final int SIZE = 256; //Final size of the bytes
     private StringBuilder sb = new StringBuilder(256); //Stringbuilder which contains total of 256 bytes
-    private String[] encodeList = new String[256]; //Encodelistarray which caps at 256
+    private String[] encodeList = new String[256]; //Encodelistarray which contains the translations
 
     private static final boolean TESTMODE = true; //change to false for less sout information
 

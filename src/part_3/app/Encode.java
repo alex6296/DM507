@@ -21,16 +21,16 @@ import java.util.logging.Logger;
  */
 public class Encode {
 
-    //TEST
     
-    private static final File FILEINPUT = new File("input.txt");
-    private static final File FILEOUTPUT = new File("output.txt");
+    
+    private static final File FILEINPUT = new File("input.txt"); //The input file we are using
+    private static final File FILEOUTPUT = new File("output.txt"); //The output file we are using
     private static final boolean TESTMODE = true; //change to false for less sout information
 
     //var
-    private int SIZE = 256;
-    private StringBuilder sb = new StringBuilder(256);
-    private String[] encodeList = new String[256];
+    private int SIZE = 256; //Final size of the bytes
+    private StringBuilder sb = new StringBuilder(256);  //Stringbuilder which contains total of 256 bytes
+    private String[] encodeList = new String[256]; //Encodelistarray which caps at 256
 
     public static void main(String[] args) {
         Encode e = new Encode();
@@ -43,7 +43,7 @@ public class Encode {
     }
 
     public void run(String[] args) throws Exception {
-        int[] inputArray = getInput(args/*args[0]*/); // OPGAVE
+        int[] inputArray = getInput(args/*args[0]*/); //Retrieves the inputfile and creates an array
         System.out.println("--input ---");
         System.out.println("index : frequency");
         for (int i = 0; i < inputArray.length; i++) {
@@ -58,7 +58,7 @@ public class Encode {
         }
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
-        PQ Q = new PQHeap(SIZE);
+        PQ Q = new PQHeap(SIZE); //transforms array to PQHeap
 
         //insert all bytes in PQ
         for (int charValue = 0; charValue < inputArray.length; charValue++) {
@@ -67,7 +67,7 @@ public class Encode {
             Q.insert(e);
         }
 
-        Knot root = huffmanify(Q); //OPGAVE 2
+        Knot root = huffmanify(Q); ////Generates the huffman tree
         System.out.println("root.value = " + root.value);
         System.out.println("root.freq = " + root.freq);
 
@@ -75,20 +75,21 @@ public class Encode {
         System.out.println("value : code");
         treeSearch(root);
         System.out.println("--- compress ---");
-        compress(args/*args[0]*/); //OPGAVE 4
+        compress(args/*args[0]*/); // Compresses a file 
     }
 
     private int[] getInput(String[] args) throws Exception {
-        int[] result = new int[SIZE];
+        int[] result = new int[SIZE]; //Creates a new array which contains the final int size which is 256
 
-        //set all elements freq to 0
+
+        //set all elements frequencies to zero 
         for (int i = 0; i < result.length; i++) {
             result[i] = 0;
         }
 
         // Open input and output byte streams to/from files.
-        FileInputStream inFile = new FileInputStream(FILEINPUT/*args[0]*/);
-        BufferedInputStream reader = new BufferedInputStream(inFile);
+        FileInputStream inFile = new FileInputStream(FILEINPUT/*args[0]*/); //Retrieves the input  file 
+        BufferedInputStream reader = new BufferedInputStream(inFile); //Uses bufferedinputstream to read file
 
         //find frequencies [index = charNumber, value = freq.]
         int i = reader.read();
@@ -101,16 +102,16 @@ public class Encode {
     }
         
     private Knot huffmanify(PQ C) {
-        int n = C.getSize();
+        int n = C.getSize(); //Retrieves the size of the PQ object C
         PQ Q = C;
 
-        for (int i = 0; i < n - 1; i++) {
+        for (int i = 0; i < n - 1; i++) { //Runs through 
 
             //new node
             int placeHolder = 0;
             Knot z = new Knot(placeHolder, placeHolder);
 
-            //try to add Chielden
+            //tries to add children
             Knot y, x;
             try {
                 x = Q.extractMin().getData();
@@ -130,11 +131,11 @@ public class Encode {
             }
 
             try {
-                y = Q.extractMin().getData();
-                z.setRightChield(y);  //try to add leftChield
-                z.freq += y.freq;
+                y = Q.extractMin().getData(); //gets the root data
+                z.setRightChield(y);  //tries to add a leftChield
+                z.freq += y.freq; //adds the frequency to its parent
                 if (y.freq > 0) {
-                    z.value += y.value;
+                    z.value += y.value; //adds the frequency to its parent 
                 }
 
                 if (TESTMODE) {
@@ -143,16 +144,16 @@ public class Encode {
                     }
                 }
 
-            } catch (NullPointerException e) {
+            } catch (NullPointerException e) { //Catches possible nullpointerexception
             }
 
             //insert combined knot to Q
             Element e = new Element(z.freq, z);
-            Q.insert(e);
+            Q.insert(e); //inserts the  combined knot to Q
 
         }
 
-        Knot r = Q.extractMin().data;
+        Knot r = Q.extractMin().data; //Extracts the data of the root 
 
         if (TESTMODE) {
             System.out.println("at end heap.size() = " + Q.getSize());
@@ -164,35 +165,36 @@ public class Encode {
 
     public void treeSearch(Knot r) {
 
-        if (r == null) {
+        if (r == null) {  // if r is null then we got the root if thats the case return nothing 
             return;
         }
 
-        sb.append('0');
-        treeSearch(r.leftChield);
-        sb.deleteCharAt(sb.length() - 1);
+        sb.append('0'); //appends 0 to the stringbuilder if we pick a child located at left-most side. 
+        treeSearch(r.leftChield); // recursive calling to check on leftchild 
+        sb.deleteCharAt(sb.length() - 1); //clears stringbuilder
 
-        //check for 
+        //checks if r has no leftchild and has no rightchild and that its frequency is above 0
         if (!r.hasLeftChield() && !r.hasRightChield() && r.freq > 0) {
             String finalCode = sb.toString(); //get converted code
             encodeList[r.value] = finalCode; // save to code list
             System.out.println("   " + r.value + " : " + finalCode);
         }
 
-        sb.append('1');
-        treeSearch(r.rightChield);
-        sb.deleteCharAt(sb.length() - 1);
+        sb.append('1'); //appends 1 to the stringbuilder if we pick a child located at right-most side. 
+        treeSearch(r.rightChield);  //recursive calling to check rightchild
+        sb.deleteCharAt(sb.length() - 1); //clears stringbuilder
 
     }
 
     private void compress(String[] args) throws FileNotFoundException, IOException, Exception {
 
-        //TODO should used bitoutputstream
-        // Open input and output byte streams to/from files.
-        //IN
+        
+        
+        
         String codeword;
         PQ Q = new PQHeap(SIZE);
         
+        // Open input and output byte streams to/from files.
         FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
         BufferedInputStream reader = new BufferedInputStream(inFile);
         BitOutputStream out = new BitOutputStream(new FileOutputStream(FILEOUTPUT));
@@ -201,19 +203,23 @@ public class Encode {
         int[] freqList = getInput(args);
         for (int i = 0; i < freqList.length; i++) {
             int o = freqList[i];
+            //writing  out the frequencies 
            out.writeInt(o); 
         }
         
-        //add file
+        //scanning the file again
         int i = reader.read();
+        //loop to ensure writing to the files happens as the file scans
         while (i != -1) {
             
             codeword = encodeList[i];
+            //writing to the file
             out.writeInt(Integer.parseInt(codeword));
+            //ensuring i updates and keeps the loop going
             i = reader.read();
         }
         
-        //  close
+        //  closing
         reader.close();
         out.close();
     }
