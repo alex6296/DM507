@@ -46,8 +46,7 @@ public class Encode {
     }
 
     public void run(String[] args) throws Exception {
-
-        int[] inputArray = getInput(args/*args[0]*/); // OPGAVE 1
+        int[] inputArray = getInput(args/*args[0]*/); // OPGAVE
         System.out.println("--input ---");
         System.out.println("index : frequency");
         for (int i = 0; i < inputArray.length; i++) {
@@ -59,9 +58,7 @@ public class Encode {
                     System.out.println("   " + i + " : " + inputArray[i]);
                 }
             }
-
         }
-
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
         PQ Q = new PQHeap(SIZE + 10);
@@ -439,7 +436,7 @@ public class Encode {
     public class Element {
 
         private final int key;
-        private Knot data;
+        public Knot data;
 
         public Element(int i, Knot o) {
             this.key = i;
