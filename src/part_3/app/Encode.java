@@ -26,7 +26,7 @@ import java.util.logging.Logger;
  * @author Administrator
  */
 public class Encode {
-    
+
     private static String codeName;
 
     //TEST
@@ -66,7 +66,6 @@ public class Encode {
             }
 
         }
-        
 
         System.out.println("--- huffmanify ---");
         //transform array to PQHeap
@@ -84,12 +83,12 @@ public class Encode {
         System.out.println("root.freq = " + root.freq);
 
         System.out.println("--- tablefy ---");
+        System.out.println("value : code");
         generateCodenames(root); // OPGAVE 3   
         System.out.println("--- compress ---");
         compress(args/*args[0]*/); //OPGAVE 4
     }
 
-     
     private int[] getInput(String[] args) throws Exception {
         int[] result = new int[SIZE];
 
@@ -158,66 +157,62 @@ public class Encode {
 
         return r;
     }
-    
-       public Knot treeSearch(int key, Knot parent) {
-            
-            
-            
-            StringBuilder sb = new StringBuilder(250);        
-            if(parent == null){
-                for (int i = 0; i < sb.length(); i++) {
-                    sb.deleteCharAt(i);
-                }
+    //var 
+    private StringBuilder sb = new StringBuilder(255);
+    private String[] encodeList = new String[255];
+
+    public Knot treeSearch(int targetValue, Knot root) {;
+
+        Knot result;
+
+        //if parrent is a leaf node       
+        if (!root.hasLeftChield() && !root.hasRightChield()) {
+
+            String finalCode = sb.toString(); //get converted code
+            if (encodeList[root.value] == null) {
+                encodeList[root.value] = finalCode; // save to code list
+                System.out.println("   "+root.value + " : " + finalCode);
             }
-           
-            if (parent.freq == key) {  
-                
-                System.out.println("Parent is zero or equal its key : " + key);
-           
-                Knot n =  parent;
-                
-            }
-            if (key < parent.freq ) {   
-                sb.append("0");
-                System.out.println("Added " + sb.toString() + " to the code ");
-                Knot n =treeSearch(key, parent.leftChield);
-                
-            } else {    
-                sb.append("1");
-                   System.out.println("Added " + sb.toString() + " to the code ");
-                   
-                Knot n = treeSearch(key, parent.rightChield);
-            }
-            codeName = sb.toString();
-            for (int i = 0; i < sb.length(); i++) {
-                sb.deleteCharAt(i);
-            }
-            
-            return parent;
-          
+            sb = new StringBuilder(250); //clear string builder
+            return null; //continue recursive calls
         }
-     public void generateCodenames(Knot root){
-            //alex find lige rootNode + binTree
-            codenameArray = new String[256];
-       
-          for (int i = 0; i < 255; i++) {    
-             treeSearch(i, root);
-             codenameArray[i] = codeName;       
+
+        //if taget is small get left chield
+        if (targetValue < root.freq) {
+
+            sb.append("0"); //add 0 to code
+            if (TESTMODE) {
+                System.out.println("Added " + sb.toString() + " to the code ");
+            }
+
+            result = treeSearch(targetValue, root.leftChield);
+
+        } else { //if taget is greater get right chield
+            sb.append("1");// add 1 to code
+            if (TESTMODE) {
+                System.out.println("Added " + sb.toString() + " to the code ");
+            }
+
+            result = treeSearch(targetValue, root.rightChield);
+        }
+
+        return result;
+
+    }
+
+    public void generateCodenames(Knot root) {
+        //alex find lige rootNode + binTree
+        codenameArray = new String[256];
+
+        for (int i = 0; i < 255; i++) {
+            treeSearch(i, root);
+            codenameArray[i] = codeName;
         }
     }
 
-
     private void compress(String[] args) throws FileNotFoundException, IOException {
-        //TEST DICT
-        Map<Integer, Integer> tempMap = new HashMap<>();
-        tempMap.put(97, 00);
-        tempMap.put(99, 01);
-        tempMap.put(115, 10);
-        tempMap.put(116, 11);
-         //TEST DICT
-        
-        //TODO should used bitoutputstream
 
+        //TODO should used bitoutputstream
         // Open input and output byte streams to/from files.
         //IN
         FileInputStream inFile = new FileInputStream(FILEINPUT /*args[0]*/);
@@ -228,16 +223,9 @@ public class Encode {
         //write output to file
         int i = i = reader.read();
         while (i != -1) {
-            //write code out
-            System.out.println("i = " + i);
-            int code = tempMap.get(i);
-            System.out.println("code = " + code);
-            
+
             //TODO figure out why outputs are squares
-            
             //write to file
-            out.write(code);
-            
             //next
             i = reader.read();
         }
@@ -246,6 +234,7 @@ public class Encode {
         out.close();
     }
 
+//DATA STRUCTURE
     public class Knot {
 
         public int value, freq;
@@ -278,55 +267,6 @@ public class Encode {
         }
 
         public void setRightChield(Knot rightChield) {
-            this.rightChield = rightChield;
-        }
-
-    }
-
-// DICT 
-    
-    
-  
-
-    public class Node {
-
-        private int key;
-        private Node leftChield = null;
-        private Node rightChield = null;
-
-        public Node(int key) {
-            this.key = key;
-        }
-
-        public int getKey() {
-            return key;
-        }
-
-        public void setKey(int key) {
-            this.key = key;
-        }
-
-        public boolean hasLeftChield() {
-            return leftChield != null;
-        }
-
-        public Node getLeftChield() {
-            return leftChield;
-        }
-
-        public void setLeftChield(Node leftChield) {
-            this.leftChield = leftChield;
-        }
-
-        public boolean hasRightChield() {
-            return rightChield != null;
-        }
-
-        public Node getRightChield() {
-            return rightChield;
-        }
-
-        public void setRightChield(Node rightChield) {
             this.rightChield = rightChield;
         }
 
